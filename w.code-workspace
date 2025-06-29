@@ -1,0 +1,22 @@
+{
+  "folders": [{ "path": "." }],
+  "settings": {
+    "search.followSymlinks": false,
+    "files.watcherExclude": {},
+    "files.exclude": {
+      "**/__pycache__/**": true,
+      "**/node_modules/*/**": true,
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true
+    },
+    "python.defaultInterpreterPath": "python3",
+    "python.analysis.autoImportCompletions": true,
+    "python.languageServer": "Pylance",
+    "python.terminal.activateEnvironment": false,
+    "autopep8.interpreter": ["python3"],
+    "autopep8.args": ["--indent-size=2", "--max-line-length=120", "--ignore=E302"],
+    "flake8.args": ["--disable=C0111", "--max-line-length=120"],
+    "prettier.printWidth": 120,
+    "prettier.tabWidth": 2
+  }
+}
