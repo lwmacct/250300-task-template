@@ -1,0 +1,77 @@
+version: "3"
+
+tasks:
+  clear:
+    desc: "清除历史提交记录"
+    silent: true
+    cmds:
+      - |
+        _branch_name_current=$(git branch --show-current 2>/dev/null || echo "")
+        _branch_name_backups="local/bak/${_branch_name_current}/$(date +'%Y/%m/%d/%H%M%S')"
+        if [[ "${_branch_name_current}" == "" ]]; then
+          echo "当前分支为空，跳过清除 git 缓存"
+          exit 0
+        fi
+        git add -A && git commit -am "clear commit" || true
+        git rm -r --cached .
+        git branch -m ${_branch_name_backups}
+        git checkout --orphan ${_branch_name_current}
+        git add -A && git commit -am "clear commit" || true
+        git push -f origin ${_branch_name_current}
+
+  reinit:
+    desc: "重新初始化 git"
+    cmds:
+      - |
+        _remote_url=$(git remote get-url origin | head -n1)
+        rm -rf .git
+        git init --initial-branch=main
+        touch README.md
+        git add .
+        git commit -m "first commit"
+        git tag -a {{.GIT_TAG_LATEST}} -m "init"
+        git remote add origin ${_remote_url}
+        git config push.autoSetupRemote true
+      - task: clear
+
+  push:
+    desc: "推送代码"
+    cmds:
+      - |
+        git add .
+        git commit -m " - {{.CLI_ARGS}}" || true
+        git push || true
+
+  tag:next:
+    desc: "创建 tag"
+    vars:
+      GIT_TAG_NEXT:
+        sh: |
+          echo {{.GIT_TAG_LATEST}} | awk -F. '{print $1"."$2"."$3+1}'
+    cmds:
+      - echo '__version__ = "{{.GIT_TAG_NEXT}}"'  > $(find . -maxdepth 3 -name  version.py) || true
+      - task: push
+      - |
+        git tag -a {{.GIT_TAG_NEXT}} -m "- {{.CLI_ARGS}}"
+        git push origin {{.GIT_TAG_NEXT}}
+
+  keys:gen:
+    desc: "设置并使用部署秘钥"
+    cmds:
+      - |
+        _path_keys=".taskfile/git/keys"
+        mkdir -p ${_path_keys}
+        if [[ ! -f "${_path_keys}/id_ed25519" ]]; then
+          ssh-keygen -t ed25519 -N '' -f ${_path_keys}/id_ed25519 -C "{{.GIT_PROJECT}}"
+        fi
+        chmod 600 ${_path_keys}/id_ed25519
+        chmod 644 ${_path_keys}/id_ed25519.pub
+
+  keys:set:
+    desc: "设置部署秘钥"
+    cmds:
+      - |
+        _path_keys=".taskfile/git/keys"
+        chmod 600 ${_path_keys}/id_ed25519
+        git config push.autoSetupRemote true
+        git config core.sshCommand "ssh -i ${_path_keys}/id_ed25519 -o StrictHostKeyChecking=no -F /dev/null"

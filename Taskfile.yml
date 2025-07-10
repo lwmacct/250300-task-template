@@ -1,0 +1,26 @@
+# https://taskfile.dev
+
+version: "3"
+dotenv: [".env", ".taskfile/.env", "{{.HOME}}/.env", ".taskfile/.env.template"]
+
+includes:
+  env:
+    taskfile: .taskfile/env.yml
+    optional: true
+    flatten: true
+
+  cmd:
+    taskfile: .taskfile/cmd.yml
+    optional: true
+
+  git:
+    taskfile: .taskfile/git.yml
+    optional: true
+
+  py:
+    taskfile: .taskfile/py.yml
+    optional: true
+
+  go:
+    taskfile: .taskfile/go.yml
+    optional: true
