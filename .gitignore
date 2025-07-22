@@ -11,6 +11,3 @@
 **/logs/**
 **/temp/**
 **/cache/**
-
-# claude
-**/.claude/settings.local.json
