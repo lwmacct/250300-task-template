@@ -49,7 +49,7 @@ tasks:
         sh: |
           echo {{.GIT_TAG_LATEST}} | awk -F. '{print $1"."$2"."$3+1}'
     cmds:
-      - echo '__version__ = "{{.GIT_TAG_NEXT}}"'  > $(find . -maxdepth 3 -name  version.py) || true
+      - echo "{{.GIT_TAG_NEXT}}" | sed -r 's/^v//' | { read ver; sed -r 's|^(version =).*|\1 "'"$ver"'"|' pyproject.toml -i; } || true
       - task: push
       - |
         git tag -a {{.GIT_TAG_NEXT}} -m "- {{.CLI_ARGS}}"
