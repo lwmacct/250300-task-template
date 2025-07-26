@@ -17,10 +17,6 @@ includes:
     taskfile: .taskfile/git.yml
     optional: true
 
-  py:
-    taskfile: .taskfile/py.yml
-    optional: true
-
   go:
     taskfile: .taskfile/go.yml
     optional: true
