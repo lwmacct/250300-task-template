@@ -1,3 +1,5 @@
 ---
 alwaysApply: true
 ---
+- 所有 Python 相关指令都应通过 `uv` 执行
+- 独立的测试脚本, 必须放在 `tests` 目录下
