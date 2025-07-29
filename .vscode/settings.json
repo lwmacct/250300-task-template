@@ -1,0 +1,4 @@
+{
+  "autopep8.args": ["--indent-size=4"],
+  "flake8.args": ["--extend-ignore=E111,E114", "--max-line-length=256"]
+}
