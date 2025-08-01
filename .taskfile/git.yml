@@ -27,7 +27,7 @@ tasks:
         rm -rf .git
         git init --initial-branch=main
         touch README.md
-        git add .
+        git add --all
         git commit -m "first commit"
         git tag -a {{.GIT_TAG_LATEST}} -m "init"
         git remote add origin ${_remote_url}
@@ -38,7 +38,7 @@ tasks:
     desc: "推送代码"
     cmds:
       - |
-        git add .
+        git add --all
         git commit -m " - {{.CLI_ARGS}}" || true
         git push || true
 
