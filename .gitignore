@@ -21,3 +21,6 @@ __pycache__/
 *.pyz
 *.pywz
 *.pyzw
+
+# golang
+main
