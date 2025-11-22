@@ -1,0 +1,37 @@
+# Pre-commit hooks configuration
+# See https://pre-commit.com for more information
+
+repos:
+  # 本地自定义检查
+
+  # 通用官方钩子
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=512"]
+
+  - repo: local
+    hooks:
+      # Go 代码静态检查
+      - id: golangci-lint
+        name: Run golangci-lint on Go files
+        entry: golangci-lint run
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+        files: \.go$
+
+      # VitePress 文档构建检查
+      - id: vitepress-build
+        name: Build VitePress docs when docs/ changes
+        entry: docs/.vitepress/scripts/vitepress-build-pre-commit.sh
+        language: script
+        pass_filenames: true
+        stages: [pre-commit]
+        files: ^docs/
+
+# 全局配置
+default_stages: [pre-commit]
+fail_fast: false # 不要在第一个失败时停止，运行所有检查
+
