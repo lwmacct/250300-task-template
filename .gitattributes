@@ -1,0 +1,5 @@
+# Git LFS 配置
+# 将 dist 目录下的所有文件声明为 LFS 文件
+dist/** filter=lfs diff=lfs merge=lfs -text
+**/*.tar.gz filter=lfs diff=lfs merge=lfs -text
+**/*.zip filter=lfs diff=lfs merge=lfs -text
