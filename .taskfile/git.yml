@@ -49,16 +49,27 @@ tasks:
         git push || true
 
   tag:next:
-    desc: "创建 tag"
+    desc: "创建 tag (参数: [版本等级] [提交信息], 等级: 1=major, 2=minor, 3=patch, 默认 3)"
     vars:
+      VERSION_LEVEL: '{{index (splitList " " .CLI_ARGS) 0 | default "3"}}'
+      TAG_MESSAGE: '{{slice (splitList " " .CLI_ARGS) 1 | join " "}}'
       GIT_TAG_NEXT:
         sh: |
-          echo {{.GIT_TAG_LATEST}} | awk -F. '{print $1"."$2"."$3+1}'
+          level="{{.VERSION_LEVEL}}"
+          tag="{{.GIT_TAG_LATEST}}"
+          # 提取版本号部分 (去掉 v 前缀)
+          version="${tag#v}"
+          IFS='.' read -r major minor patch <<< "$version"
+          case "$level" in
+            1) echo "v$((major + 1)).0.0" ;;
+            2) echo "v${major}.$((minor + 1)).0" ;;
+            *) echo "v${major}.${minor}.$((patch + 1))" ;;
+          esac
     cmds:
       - echo "{{.GIT_TAG_NEXT}}" | sed -r 's/^v//' | { read ver; sed -r 's|^(version =).*|\1 "'"$ver"'"|' pyproject.toml -i >/dev/null 2>&1; } || true
       - task: push
       - |
-        git tag -a {{.GIT_TAG_NEXT}} -m "- {{.CLI_ARGS}}"
+        git tag -a {{.GIT_TAG_NEXT}} -m '{{.TAG_MESSAGE | default "version bump"}}'
         git push origin {{.GIT_TAG_NEXT}}
 
   keys:gen:
