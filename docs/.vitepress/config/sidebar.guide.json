@@ -2,7 +2,7 @@
   {
     "text": "指南",
     "items": [
-      { "text": "快速开始", "link": "/guide/getting-started" },
+      { "text": "快速开始", "link": "/guide/quick-start" },
       { "text": "项目介绍", "link": "/guide/readme" },
       { "text": "AI Agent", "link": "/guide/agents" }
     ]
