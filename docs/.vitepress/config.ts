@@ -1,9 +1,10 @@
 import { defineConfig, type DefaultTheme } from "vitepress";
 import nav from "./config/nav.json";
+// config sidebar
 import sidebarGuide from "./config/sidebar.guide.json";
 import sidebarIssues from "./config/sidebar.issues.json";
-// 模板示例侧边栏 - 新项目可删除此行及 content/examples/ 目录
 import sidebarExamples from "./config/sidebar.examples.json";
+// config other
 import cfgSearch from "./config/search.json";
 import viteConfig from "./config/vite";
 import markdownConfig from "./config/markdown";
