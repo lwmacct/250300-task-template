@@ -29,7 +29,7 @@ repos:
       # VitePress 文档构建检查
       - id: vitepress-build
         name: Build VitePress docs when docs/ changes
-        entry: docs/.vitepress/pre-commit.sh
+        entry: docs/scripts/pre-commit.sh
         language: script
         pass_filenames: false
         stages: [pre-commit]
