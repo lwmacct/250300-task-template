@@ -3,22 +3,24 @@
 layout: home
 
 hero:
-  name: "我的超棒项目"
-  text: "一个 VitePress 站点"
-  tagline: 我的优秀项目标语
+  name: "任务模板"
+  text: "Task Template"
+  tagline: 开箱即用的项目开发模板
   actions:
     - theme: brand
-      text: Markdown 示例
-      link: /examples/markdown
+      text: 快速开始
+      link: /guide/readme
     - theme: alt
-      text: API 示例
-      link: /examples/api
+      text: 常见问题
+      link: /issues/git-commit
 
 features:
-  - title: 功能 A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: 功能 B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: 功能 C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Pre-commit
+    details: 使用 Pre-commit 框架管理多语言 Git 钩子
+  - title: Taskfile
+    details: 使用 Taskfile 管理项目 CLI 命令
+  - title: Dev Container
+    details: 使用 Dev Container 创建一致的开发环境
 ---
+
+<!--@include: ./guide/readme.md-->
