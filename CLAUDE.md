@@ -1,1 +1,1 @@
-docs/content/agents.md
+docs/content/guide/agents.md
