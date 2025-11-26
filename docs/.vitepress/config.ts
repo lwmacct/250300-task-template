@@ -5,6 +5,7 @@ import sidebarIssues from "./config/sidebar.issues.json";
 // 模板示例侧边栏 - 新项目可删除此行及 content/examples/ 目录
 import sidebarExamples from "./config/sidebar.examples.json";
 import cfgSearch from "./config/search.json";
+import viteConfig from "./config/vite";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -13,29 +14,8 @@ export default defineConfig({
   base: process.env.BASE || "/docs",
   srcDir: "content",
 
-  // Vite 构建优化 - 代码分割配置
-  vite: {
-    build: {
-      chunkSizeWarningLimit: 600, // 提高警告阈值 (KB)
-      rollupOptions: {
-        output: {
-          // 手动分块策略，优化首屏加载和缓存利用率
-          // 使用函数形式避免 external 模块冲突
-          manualChunks(id) {
-            if (!id.includes("node_modules")) return;
-            // MiniSearch 搜索引擎
-            if (id.includes("minisearch")) {
-              return "search";
-            }
-            // shiki 代码高亮 (体积较大)
-            if (id.includes("shiki") || id.includes("oniguruma")) {
-              return "syntax-highlight";
-            }
-          },
-        },
-      },
-    },
-  },
+  // Vite 构建优化配置 (从 ./config/vite.ts 导入)
+  vite: viteConfig,
 
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
