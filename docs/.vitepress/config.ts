@@ -1,6 +1,6 @@
 import { defineConfig } from "vitepress";
 import nav from "./config/nav.json";
-import sidebar from "./config/sidebar.json";
+import sidebarGuide from "./config/sidebar.guide.json";
 // 模板示例侧边栏 - 新项目可删除此行及 content/examples/ 目录
 import sidebarExamples from "./config/sidebar.examples.json";
 
@@ -12,7 +12,7 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav,
-    sidebar: [...sidebar, ...sidebarExamples],
+    sidebar: [...sidebarGuide, ...sidebarExamples],
 
     socialLinks: [{ icon: "github", link: "https://github.com/vuejs/vitepress" }],
   },
