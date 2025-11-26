@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: 快速开始
-      link: /guide/readme
+      link: /guide/getting-started
     - theme: alt
       text: 常见问题
       link: /issues/git-commit
@@ -21,6 +21,8 @@ features:
     details: 使用 Taskfile 管理项目 CLI 命令
   - title: Dev Container
     details: 使用 Dev Container 创建一致的开发环境
+---
+
 ---
 
 <!--@include: ./guide/readme.md-->
