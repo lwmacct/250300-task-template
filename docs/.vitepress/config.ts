@@ -6,6 +6,7 @@ import sidebarIssues from "./config/sidebar.issues.json";
 import sidebarExamples from "./config/sidebar.examples.json";
 import cfgSearch from "./config/search.json";
 import viteConfig from "./config/vite";
+import markdownConfig from "./config/markdown";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -28,18 +29,6 @@ export default defineConfig({
     socialLinks: [{ icon: "github", link: "https://github.com/vuejs/vitepress" }],
   },
 
-  // Mermaid 代码块转换 - 将 ```mermaid 转换为 <pre class="mermaid">
-  markdown: {
-    config: (md) => {
-      const fence = md.renderer.rules.fence!;
-      md.renderer.rules.fence = (...args) => {
-        const [tokens, idx] = args;
-        const token = tokens[idx];
-        if (token.info.trim() === "mermaid") {
-          return `<pre class="mermaid">${token.content}</pre>`;
-        }
-        return fence(...args);
-      };
-    },
-  },
+  // Markdown 渲染配置 (从 ./config/markdown.ts 导入)
+  markdown: markdownConfig,
 });
