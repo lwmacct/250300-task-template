@@ -2,8 +2,8 @@
   {
     "text": "指南",
     "items": [
-      { "text": "项目介绍", "link": "/content/guide/readme" },
-      { "text": "Agent 指南", "link": "/content/guide/agents" }
+      { "text": "项目介绍", "link": "/guide/readme" },
+      { "text": "Agent 指南", "link": "/guide/agents" }
     ]
   }
 ]

@@ -10,6 +10,7 @@ export default defineConfig({
   title: "My Awesome Project",
   description: "A VitePress Site",
   base: process.env.BASE || "/docs",
+  srcDir: "content",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav,
