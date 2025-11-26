@@ -1,8 +1,0 @@
-[
-  {
-    "text": "故障排除",
-    "items": [
-      { "text": "Git 提交问题", "link": "/content/troubleshooting/git-commit" }
-    ]
-  }
-]
