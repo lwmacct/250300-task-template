@@ -1,8 +1,8 @@
 import { defineConfig } from "vitepress";
 import nav from "./config/nav.json";
-
-import example_a from "./config/example-a.json";
-import example_b from "./config/example-b.json";
+import sidebar from "./config/sidebar.json";
+// 模板示例侧边栏 - 新项目可删除此行及 content/examples/ 目录
+import sidebarExamples from "./config/sidebar.examples.json";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -11,8 +11,8 @@ export default defineConfig({
   base: process.env.BASE || "/docs",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
-    nav: nav,
-    sidebar: [...example_a, ...example_b],
+    nav,
+    sidebar: [...sidebar, ...sidebarExamples],
 
     socialLinks: [{ icon: "github", link: "https://github.com/vuejs/vitepress" }],
   },
