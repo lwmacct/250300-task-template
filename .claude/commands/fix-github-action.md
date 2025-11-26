@@ -16,11 +16,13 @@ Recent workflow runs:
 Please complete the following tasks:
 
 1. **Fetch failure information**
+
    - If run-id is provided ($ARGUMENTS), use that ID
    - Otherwise, automatically find the most recent failed workflow run
    - Use `gh run view <run-id> --log-failed` to get failure logs
 
 2. **Analyze error cause**
+
    - Carefully read error logs and identify root cause
    - Common error types:
      - Dependency conflicts (npm peer dependency)
@@ -29,6 +31,7 @@ Please complete the following tasks:
      - Configuration issues
 
 3. **Fix the problem**
+
    - Apply appropriate fixes based on error type
    - Validate fix locally (run build/test)
    - Ensure no new issues are introduced
