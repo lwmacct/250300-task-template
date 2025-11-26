@@ -61,6 +61,7 @@ git commit -m "message"
 ### 解决方案
 
 1. **查看具体错误**：运行构建命令查看详细错误
+
    ```bash
    cd docs && npm run build
    ```
