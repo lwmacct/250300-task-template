@@ -1,4 +1,8 @@
 import { defineConfig } from "vitepress";
+import nav from "./config/nav.json";
+
+import example_a from "./config/example-a.json";
+import example_b from "./config/example-b.json";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -7,20 +11,8 @@ export default defineConfig({
   base: process.env.BASE || "/docs",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
-    nav: [
-      { text: "Home", link: "/content/" },
-      { text: "Examples", link: "/content/markdown-examples" },
-    ],
-
-    sidebar: [
-      {
-        text: "Examples",
-        items: [
-          { text: "Markdown Examples", link: "/content/markdown-examples" },
-          { text: "Runtime API Examples", link: "/content/api-examples" },
-        ],
-      },
-    ],
+    nav: nav,
+    sidebar: [...example_a, ...example_b],
 
     socialLinks: [{ icon: "github", link: "https://github.com/vuejs/vitepress" }],
   },
