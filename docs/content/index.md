@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: 快速开始
-      link: /guide/getting-started
+      link: /guide/quick-start
     - theme: alt
       text: 常见问题
       link: /issues/git-commit
