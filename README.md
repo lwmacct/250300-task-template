@@ -1,1 +1,1 @@
-docs/content/guide/readme.md
+docs/content/readme.md

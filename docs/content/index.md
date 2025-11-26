@@ -23,6 +23,4 @@ features:
     details: 使用 Dev Container 创建一致的开发环境
 ---
 
----
-
-<!--@include: ./guide/readme.md-->
+<!--@include: ./readme.md-->
