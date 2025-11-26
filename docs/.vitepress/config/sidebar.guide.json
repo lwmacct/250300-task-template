@@ -2,8 +2,8 @@
   {
     "text": "快速开始",
     "items": [
-      { "text": "项目介绍", "link": "/content/readme" },
-      { "text": "Agent 指南", "link": "/content/agents" }
+      { "text": "项目介绍", "link": "/content/project/readme" },
+      { "text": "Agent 指南", "link": "/content/project/agents" }
     ]
   }
 ]

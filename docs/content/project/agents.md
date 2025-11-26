@@ -7,7 +7,8 @@
 
 ## 🔨 开发环境
 
-- 所有 Python 相关指令必须通过 `uv` 执行, 这是正确使用 Python 环境的唯一方式
+- Python
+  - Python 相关指令必须通过 `uv` 执行, 这是正确使用 Python 环境的唯一方式
   - Python 脚本首行必须使用 `#!/usr/bin/env -S uv run python` 来确保使用正确的环境
   - 如果需要安装包, 请使用 `uv add <package-name>`
   - 如果需要运行 Python 包命令或脚本, 请使用 `uv run <command-name>`, 例如: `uv run pip list`, `uv run apps/<app_name>/main.py`
@@ -21,6 +22,6 @@
 ## 📝 Git 提交约定
 
 - 本项目使用 [pre-commit](https://pre-commit.com/) 框架 (已安装在环境中)
-- 在完成每一个任务后进行 git commit 来提交工作报告, 如果 pre-commit 检查失败, 请继续修改直到通过
-- 环境中可能有多个 AI Agent 在工作，git commit 时不必在意其他被修改的文件
+- 在完成每一个任务后进行 `git commit` 来提交工作报告, 如果 pre-commit 检查失败, 请继续修改直到通过
 - 如果你需要跳过检查 (与当前任务不相关的错误)，可以使用 `git commit --no-verify`
+- 环境中可能有多个 AI Agent 在工作，git commit 时不必在意其他被修改的文件
