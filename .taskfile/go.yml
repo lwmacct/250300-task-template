@@ -96,4 +96,4 @@ tasks:
       - task: build
     cmds:
       - |
-        {{.GO_BUILD_PATH}} {{.CLI_ARGS}}
+        {{.GO_BUILD_PATH}} {{.CLI_ARGS | default ""}}
