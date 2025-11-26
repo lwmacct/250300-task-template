@@ -17,11 +17,15 @@ cd /apps/data/workspace/project/docs && git add docs/.vitepress/config.ts
 
 ### 解决方案
 
-**方案一：使用绝对路径（推荐）**
+**方案一：使用 `-C` 参数指定仓库路径（推荐）**
 
 ```bash
-git add /apps/data/workspace/project/docs/.vitepress/config.ts
+# 无需 cd，直接指定仓库路径执行命令
+git -C /apps/data/workspace/project add docs/.vitepress/config.ts
+git -C /apps/data/workspace/project commit -m "message"
 ```
+
+> `-C <path>` 参数让 Git 在指定目录下执行命令，避免了工作目录切换带来的路径问题。
 
 **方案二：从项目根目录执行**
 
@@ -35,6 +39,12 @@ git add docs/.vitepress/config.ts
 ```bash
 cd /apps/data/workspace/project/docs
 git add .vitepress/config.ts  # 相对于当前目录
+```
+
+**方案四：使用绝对路径**
+
+```bash
+git add /apps/data/workspace/project/docs/.vitepress/config.ts
 ```
 
 ## pre-commit 检查失败
