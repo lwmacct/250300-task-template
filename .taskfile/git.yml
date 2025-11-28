@@ -71,3 +71,37 @@ tasks:
       - |
         git tag -a {{.GIT_TAG_NEXT}} -m '{{.TAG_MESSAGE | default "version bump"}}'
         git push origin {{.GIT_TAG_NEXT}}
+
+  # 同步上游仓库
+  sync:upstream:
+    desc: "从上游仓库同步代码到本地 main 分支并创建临时工作分支"
+    silent: true
+    cmds:
+      - |
+        # 检查是否配置了 upstream 远程仓库
+        if ! git remote get-url upstream >/dev/null 2>&1; then
+          echo "未配置 upstream 远程仓库，跳过同步"
+          echo "提示: 使用 'git remote add upstream <url>' 添加上游仓库"
+          exit 0
+        fi
+
+        # 保存当前分支名
+        _current_branch=$(git branch --show-current)
+
+        # 重置本地更改并清理未跟踪文件
+        git reset --hard HEAD && git clean -fd
+
+        # 切换到 main 分支
+        git checkout main
+
+        # 从 upstream 拉取并 rebase
+        git pull --rebase upstream main
+
+        # 推送到 origin main
+        git push origin main
+
+        # 创建临时工作分支
+        _ts=$(date "+%y%m%d-%H%M")
+        git checkout -b "tmp/${_ts}"
+
+        echo "同步完成，已创建临时分支: tmp/${_ts}"
