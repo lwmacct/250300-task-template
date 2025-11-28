@@ -100,8 +100,17 @@ tasks:
         # 推送到 origin main
         git push origin main
 
-        # 创建临时工作分支
-        _ts=$(date "+%y%m%d-%H%M")
-        git checkout -b "tmp/${_ts}"
+        echo "同步完成"
+      - task: checkout:tmp
 
-        echo "同步完成，已创建临时分支: tmp/${_ts}"
+  checkout:tmp:
+    desc: "创建临时工作分支"
+    silent: true
+    cmds:
+      - |
+        _ts=$(date "+%y%m%d-%H%M")
+        # 切换到 main 分支
+        git checkout main
+        # 创建临时分支
+        git checkout -b "tmp/${_ts}"
+        echo "已创建临时分支: tmp/${_ts}"
