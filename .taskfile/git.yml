@@ -1,39 +1,6 @@
 version: "3"
 
 tasks:
-  clear:
-    desc: "清除历史提交记录"
-    silent: true
-    cmds:
-      - |
-        _branch_name_current=$(git branch --show-current 2>/dev/null || echo "")
-        _branch_name_backups="local/bak/${_branch_name_current}/$(date +'%Y/%m/%d/%H%M%S')"
-        if [[ "${_branch_name_current}" == "" ]]; then
-          echo "当前分支为空，跳过清除 git 缓存"
-          exit 0
-        fi
-        git add -A && git commit -am "clear commit" --no-verify || true
-        git rm -r --cached .
-        git branch -m ${_branch_name_backups}
-        git checkout --orphan ${_branch_name_current}
-        git add -A && git commit -am "clear commit" --no-verify || true
-        git push -f origin ${_branch_name_current}
-
-  reinit:
-    desc: "重新初始化 git"
-    cmds:
-      - |
-        _remote_url=$(git remote get-url origin | head -n1)
-        rm -rf .git
-        git init --initial-branch=main
-        touch README.md
-        git add --all
-        git commit -m "first commit" --no-verify || true
-        git tag -a {{.GIT_TAG_LATEST}} -m "init"
-        git remote add origin ${_remote_url}
-        git config push.autoSetupRemote true
-      - task: clear
-
   commit:
     desc: "使用 Claude AI 生成提交信息并提交代码"
     cmds:
@@ -72,7 +39,6 @@ tasks:
         git tag -a {{.GIT_TAG_NEXT}} -m '{{.TAG_MESSAGE | default "version bump"}}'
         git push origin {{.GIT_TAG_NEXT}}
 
-  # 同步上游仓库
   sync:upstream:
     desc: "从上游仓库同步代码到本地 main 分支并创建临时工作分支"
     silent: true
@@ -114,3 +80,36 @@ tasks:
         # 创建临时分支
         git checkout -b "tmp/${_ts}"
         echo "已创建临时分支: tmp/${_ts}"
+
+  clear:
+    desc: "清除历史提交记录 (危险)"
+    silent: true
+    cmds:
+      - |
+        _branch_name_current=$(git branch --show-current 2>/dev/null || echo "")
+        _branch_name_backups="local/bak/${_branch_name_current}/$(date +'%Y/%m/%d/%H%M%S')"
+        if [[ "${_branch_name_current}" == "" ]]; then
+          echo "当前分支为空，跳过清除 git 缓存"
+          exit 0
+        fi
+        git add -A && git commit -am "clear commit" --no-verify || true
+        git rm -r --cached .
+        git branch -m ${_branch_name_backups}
+        git checkout --orphan ${_branch_name_current}
+        git add -A && git commit -am "clear commit" --no-verify || true
+        git push -f origin ${_branch_name_current}
+
+  reinit:
+    desc: "重新初始化 git (危险)"
+    cmds:
+      - |
+        _remote_url=$(git remote get-url origin | head -n1)
+        rm -rf .git
+        git init --initial-branch=main
+        touch README.md
+        git add --all
+        git commit -m "first commit" --no-verify || true
+        git tag -a {{.GIT_TAG_LATEST}} -m "init"
+        git remote add origin ${_remote_url}
+        git config push.autoSetupRemote true
+      - task: clear
