@@ -2,8 +2,6 @@
 # See https://pre-commit.com for more information
 
 repos:
-  # 通用官方钩子
-
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -29,8 +27,8 @@ repos:
       # VitePress 文档构建检查
       - id: vitepress-build
         name: Build VitePress docs when docs/ changes
-        entry: docs/scripts/pre-commit.sh
-        language: script
+        entry: npm run build --prefix docs
+        language: system
         pass_filenames: false
         stages: [pre-commit]
         files: ^docs/
