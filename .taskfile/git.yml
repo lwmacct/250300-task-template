@@ -1,6 +1,15 @@
 version: "3"
 
 tasks:
+  signing:
+    desc: "配置 Git 提交签名"
+    silent: true
+    cmds:
+      - |
+        git config --global gpg.format ssh
+        git config --global user.signingkey ~/.ssh/id_ed25519.pub
+        git config --global commit.gpgsign true
+
   commit:
     desc: "使用 Claude AI 生成提交信息并提交代码"
     cmds:
