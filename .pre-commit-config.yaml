@@ -23,6 +23,7 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
         files: ^docs/
+
       # Go 代码静态检查（仅检查本次提交修改的代码）
       - id: golangci-lint
         name: Run golangci-lint on new changes
