@@ -1,0 +1,44 @@
+# Pre-commit hooks configuration
+# See https://pre-commit.com for more information
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=512"]
+
+  # 本地自定义检查
+  - repo: local
+    hooks:
+      - id: build-docs
+        name: Build VitePress docs
+        entry: npm run build --prefix docs
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+        files: ^docs/
+
+      - id: golangci-lint
+        name: Run golangci-lint on new changes
+        entry: golangci-lint run --new --fix
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+        files: \.go$
+
+      - id: config-sync
+        name: Sync and validate config files
+        entry: go test -run "TestGenerateExample|TestConfigKeysValid" ./internal/infrastructure/config/...
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+        files: ^(internal/infrastructure/config/config\.go|configs/config\.yaml)$
+
+# 全局配置
+default_stages: [pre-commit]
+fail_fast: false # 不要在第一个失败时停止，运行所有检查

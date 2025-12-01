@@ -1,0 +1,99 @@
+version: "3"
+
+vars:
+  PATH_LOCAL: ".local"
+  PATH_BIN: "{{.PATH_LOCAL}}/bin"
+  PATH_DATA: "{{.PATH_LOCAL}}/data"
+
+  GO_MODE_NAME:
+    sh: go mod edit -json 2>/dev/null | jq -r .Module.Path|| echo "{{.GO_MODE_NAME}}"
+  GO_MODE_PROJ:
+    sh: echo "{{.GO_MODE_NAME}}" | awk -F/ '{print $NF}'
+  GO_MODE_APP:
+    sh: echo "{{.GO_MODE_PROJ}}" | cut -d'-' -f2-
+  GO_BUILD_PATH: "{{.PATH_BIN}}/{{.GO_MODE_APP}}"
+  GO_BUILD_LDFLAGS_SW: -s -w
+  GO_BUILD_LDFLAGS_X: >-
+    -X '{{.GO_MODE_NAME}}/internal/commands/version.AppRawName={{.GO_MODE_APP}}'
+    -X '{{.GO_MODE_NAME}}/internal/commands/version.AppProject={{.GO_MODE_PROJ}}'
+    -X '{{.GO_MODE_NAME}}/internal/commands/version.AppVersion={{.GIT_TAG_LATEST}}'
+    -X '{{.GO_MODE_NAME}}/internal/commands/version.GitCommit={{.GIT_COMMIT}}'
+    -X '{{.GO_MODE_NAME}}/internal/commands/version.BuildTime={{.TIME_NOW}}'
+    -X '{{.GO_MODE_NAME}}/internal/commands/version.Developer={{.DEVELOPER}}'
+    -X '{{.GO_MODE_NAME}}/internal/commands/version.Workspace={{.PATH_REALPATH}}'
+  GO_BUILD_LDFLAGS: "{{.GO_BUILD_LDFLAGS_SW}} {{.GO_BUILD_LDFLAGS_X}}"
+
+tasks:
+  env:
+    desc: "显示所有定义的变量"
+    silent: true
+    cmds:
+      - |
+        echo "=== 路径相关变量 ==="
+        echo "PATH_LOCAL: {{.PATH_LOCAL}}"
+        echo "PATH_BIN: {{.PATH_BIN}}"
+        echo "PATH_DATA: {{.PATH_DATA}}"
+        echo ""
+        echo "=== Go 模块相关变量 ==="
+        echo "GO_MODE_NAME: {{.GO_MODE_NAME}}"
+        echo "GO_MODE_PROJ: {{.GO_MODE_PROJ}}"
+        echo "GO_MODE_APP: {{.GO_MODE_APP}}"
+        echo "GO_BUILD_PATH: {{.GO_BUILD_PATH}}"
+
+  release:
+    desc: "发布所有架构"
+    deps:
+      - task: release:x86_64
+
+  release:x86_64:
+    desc: "发布 x86_64 架构"
+    vars:
+      ARCH: "x86_64"
+      VERSION: "{{.GIT_TAG_LATEST}}-{{.ARCH}}"
+      IMAGE: "{{.GO_MODE_PROJ}}:{{.VERSION}}"
+      REGISTRY: "ghcr.io/{{.NAMESPACE}}"
+    cmds:
+      - |
+        echo "构建项目: {{.GO_MODE_APP}}-{{.VERSION}}"
+        export CGO_ENABLED=0
+        export GOOS=linux
+        export GOARCH=amd64
+        go build -ldflags "{{.GO_BUILD_LDFLAGS}}" -a -installsuffix cgo -o {{.GO_BUILD_PATH}}-{{.VERSION}} .
+        upx -9 -q {{.GO_BUILD_PATH}}-{{.VERSION}}
+      - |
+        jq 'del(.credsStore)' ~/.docker/config.json >~/.docker/config.json.tmp && mv ~/.docker/config.json.tmp ~/.docker/config.json
+        docker buildx build --progress plain --builder default --platform {{.ARCH}} -t {{.IMAGE}} --network host -f - --load . <<EOF
+        FROM alpine:latest
+        RUN set -eux; \
+            sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories; \
+            apk add --no-cache tini bash tzdata; \
+            cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime; \
+            echo "Asia/Shanghai" > /etc/timezone; \
+            echo;
+        WORKDIR /apps/data
+        COPY .local/bin/{{.GO_MODE_APP}}-{{.VERSION}} /usr/local/bin/app
+        ENTRYPOINT ["tini", "--"]
+        CMD ["app", "version", "run"]
+
+        LABEL org.opencontainers.image.source={{.GIT_SOURCE}}
+        LABEL org.opencontainers.image.description="{{.GO_MODE_APP}}"
+        LABEL org.opencontainers.image.licenses=MIT
+        EOF
+      - |
+        docker tag {{.IMAGE}} {{.REGISTRY}}/{{.IMAGE}}
+        docker push {{.REGISTRY}}/{{.IMAGE}}
+
+  build:
+    desc: "基础编译"
+    silent: true
+    cmds:
+      - go build -ldflags "{{.GO_BUILD_LDFLAGS_X}}" -o {{.GO_BUILD_PATH}} .
+
+  run:
+    desc: "先编译再运行"
+    silent: true
+    deps:
+      - task: build
+    cmds:
+      - |
+        {{.GO_BUILD_PATH}} {{.CLI_ARGS | default ""}}

@@ -1,0 +1,10 @@
+[
+  {
+    "text": "示例",
+    "items": [
+      { "text": "Markdown 示例", "link": "/examples/markdown" },
+      { "text": "Mermaid 图表", "link": "/examples/mermaid" },
+      { "text": "VitePress API", "link": "/examples/vitepress-api" }
+    ]
+  }
+]

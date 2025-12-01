@@ -1,0 +1,15 @@
+/* Mermaid 图表样式 */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+/* 暗色模式下反转 Mermaid 图表颜色 */
+.dark .mermaid {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.dark .mermaid image {
+  filter: invert(1) hue-rotate(180deg);
+}

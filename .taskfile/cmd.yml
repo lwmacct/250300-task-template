@@ -1,0 +1,12 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  GREETING: 用于本项目的常用命令编写
+
+tasks:
+  default:
+    desc: 默认任务
+    cmds:
+      - echo "${GREETING}"

@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "dev": "vitepress dev --host --port 5173",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "mermaid": "^11.12.1",
+    "vitepress": "^2.0.0-alpha.15"
+  }
+}
