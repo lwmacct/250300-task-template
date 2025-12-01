@@ -17,7 +17,7 @@ repos:
     hooks:
       - id: build-docs
         name: Build VitePress docs
-        entry: npm run build --prefix docs
+        entry: env CI=true NO_COLOR=1 TERM=dumb npm run build --prefix docs
         language: system
         pass_filenames: false
         stages: [pre-commit]
