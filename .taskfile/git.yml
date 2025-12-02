@@ -21,7 +21,7 @@ tasks:
     cmds:
       - |
         git add --all
-        git commit -m '{{.CLI_ARGS | default "Unimportant"}}' || true
+        git commit -m '{{.CLI_ARGS | default "Unimportant"}}'
         git push || true
 
   tag:next:
