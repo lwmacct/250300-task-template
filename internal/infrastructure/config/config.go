@@ -32,9 +32,9 @@ type ServerConfig struct {
 
 // DataConfig 数据源配置
 type DataConfig struct {
-	PgsqlURL       string `koanf:"pgsql_url" comment:"PostgreSQL 连接 URL，格式: postgresql://user:password@host:port/dbname?sslmode=disable"`
-	RedisURL       string `koanf:"redis_url" comment:"Redis 连接 URL，格式: redis://:password@host:port/db"`
-	RedisKeyPrefix string `koanf:"redis_key_prefix" comment:"Redis key 前缀，所有 key 读写都会自动拼接此前缀，例如 'app:'"`
+	PgsqlURL  string `koanf:"pgsql_url" comment:"PostgreSQL 连接 URL，格式: postgresql://user:password@host:port/dbname?sslmode=disable"`
+	RedisURL  string `koanf:"redis_url" comment:"Redis 连接 URL，格式: redis://:password@host:port/db"`
+	KeyPrefix string `koanf:"key_prefix" comment:"Redis key 前缀，所有 key 读写都会自动拼接此前缀，例如 'app:'"`
 }
 
 // Config 应用配置
@@ -53,9 +53,9 @@ func defaultConfig() Config {
 			DistDocs: "docs/.vitepress/dist",
 		},
 		Data: DataConfig{
-			PgsqlURL:       "postgresql://postgres@localhost:5432/app?sslmode=disable",
-			RedisURL:       "redis://localhost:6379/0",
-			RedisKeyPrefix: "app:",
+			PgsqlURL:  "postgresql://postgres@localhost:5432/app?sslmode=disable",
+			RedisURL:  "redis://localhost:6379/0",
+			KeyPrefix: "app:",
 		},
 	}
 }
