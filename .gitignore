@@ -34,7 +34,7 @@ __pycache__/
 
 # build binaries
 /bin/
-main
+/main
 
 # AI Agent 相关
 # **/.agent/*
