@@ -41,7 +41,7 @@ repos:
 
       - id: prettier
         name: Format docs and configs with Prettier
-        entry: prettier --write --ignore-unknown
+        entry: prettier --write --ignore-unknown --ignore-path
         language: system
         stages: [pre-commit]
         files: ^(docs/|configs/)
