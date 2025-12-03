@@ -3,7 +3,7 @@
     "text": "指南",
     "items": [
       { "text": "快速开始", "link": "/guide/quick-start" },
-      { "text": "AI Agents", "link": "/guide/agents" }
+      { "text": "AI Agents", "link": "/claude/CLAUDE" }
     ]
   }
 ]

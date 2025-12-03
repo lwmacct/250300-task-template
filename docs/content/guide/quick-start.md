@@ -33,4 +33,4 @@ task -a
 ## 下一步
 
 - 阅读 [项目介绍](/readme) 了解项目结构
-- 查看 [AI Agent](/guide/agents) 了解 AI 辅助开发
+- 查看 [AI Agent](/claude/CLAUDE) 了解 AI 辅助开发

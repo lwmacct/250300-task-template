@@ -1,1 +1,4 @@
 **/vendor/**
+
+# Symbolic links (prettier cannot process them)
+AGENTS.md

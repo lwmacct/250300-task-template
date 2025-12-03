@@ -15,6 +15,12 @@ repos:
   # 本地自定义检查
   - repo: local
     hooks:
+      - id: prettier
+        name: Format docs and configs with Prettier
+        entry: prettier --write --ignore-unknown --no-error-on-unmatched-pattern .
+        language: system
+        stages: [pre-commit]
+
       - id: build-docs
         name: Build VitePress docs
         entry: env CI=true NO_COLOR=1 TERM=dumb npm run build --prefix docs
@@ -39,13 +45,6 @@ repos:
         stages: [pre-commit]
         files: ^(internal/infrastructure/config/config\.go|configs/config\.yaml)$
 
-      - id: prettier
-        name: Format docs and configs with Prettier
-        entry: prettier --write --ignore-unknown
-        language: system
-        stages: [pre-commit]
-        files: ^(docs/|config/)
-
 # 全局配置
 default_stages: [pre-commit]
-fail_fast: false # 不要在第一个失败时停止，运行所有检查
+fail_fast: true

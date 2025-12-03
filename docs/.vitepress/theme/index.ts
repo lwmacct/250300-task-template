@@ -33,7 +33,7 @@ const theme: Theme = {
       () => route.path,
       () => {
         initMermaid();
-      }
+      },
     );
   },
 };

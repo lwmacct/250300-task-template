@@ -93,19 +93,19 @@ export default {
  */
 const config = {
   // ...
-}
+};
 
-export default config
+export default config;
 ```
 
 ```ts [config.ts]
-import type { UserConfig } from 'vitepress'
+import type { UserConfig } from "vitepress";
 
 const config: UserConfig = {
   // ...
-}
+};
 
-export default config
+export default config;
 ```
 
 :::
@@ -121,30 +121,30 @@ export default config
  */
 const config = {
   // ...
-}
+};
 
-export default config
+export default config;
 ```
 
 ```ts [config.ts]
-import type { UserConfig } from 'vitepress'
+import type { UserConfig } from "vitepress";
 
 const config: UserConfig = {
   // ...
-}
+};
 
-export default config
+export default config;
 ```
 
 :::
 
 ## 更多功能
 
-| 功能 | 支持 |
-| ---- | ---- |
-| 表格 | ✅ |
-| 链接 | ✅ |
-| Emoji | ✅ |
-| TOC | ✅ |
+| 功能  | 支持 |
+| ----- | ---- |
+| 表格  | ✅   |
+| 链接  | ✅   |
+| Emoji | ✅   |
+| TOC   | ✅   |
 
 更多语法请参考 [VitePress Markdown 文档](https://vitepress.dev/guide/markdown)
