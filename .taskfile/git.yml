@@ -18,10 +18,13 @@ tasks:
 
   push:
     desc: "推送代码"
+    vars:
+      TIME_NOW:
+        sh: echo "chore $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S %Z')"
     cmds:
       - |
         git add --all
-        git commit -m '{{.CLI_ARGS | default "Unimportant"}}'
+        git commit -m '{{.CLI_ARGS | default .TIME_NOW}}'
         git push || true
 
   tag:next:

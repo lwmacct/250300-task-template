@@ -44,7 +44,7 @@ repos:
         entry: prettier --write --ignore-unknown
         language: system
         stages: [pre-commit]
-        files: ^(docs/|configs/)
+        files: ^(docs/|config/)
 
 # 全局配置
 default_stages: [pre-commit]
