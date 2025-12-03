@@ -1,0 +1,7 @@
+# 忽略所有文件, 除了 .gitignore 本身
+*
+!.gitignore
+
+# 但不忽略包含 .example. 的文件
+
+!*.example.*
