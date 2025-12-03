@@ -11,10 +11,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/lwmacct/251125-go-mod-logger/pkg/logger"
 	"github.com/urfave/cli/v3"
 )
 
 func action(ctx context.Context, cmd *cli.Command) error {
+	if err := logger.InitEnv(); err != nil {
+		slog.Warn("初始化日志系统失败，使用默认配置", "error", err)
+	}
 
 	addr := cmd.String("addr")
 	docsDir := cmd.String("dist_docs")

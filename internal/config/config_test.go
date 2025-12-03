@@ -23,7 +23,7 @@ import (
 //
 // 运行方式:
 //
-//	go test -v -run TestGenerateExample ./internal/infrastructure/config/...
+//	go test -v -run TestGenerateExample ./internal/config/...
 func TestGenerateExample(t *testing.T) {
 	// 获取项目根目录
 	projectRoot, err := findProjectRoot()
@@ -154,7 +154,7 @@ func writeConfigYAML(buf *bytes.Buffer, cfg Config) {
 	buf.WriteString(`# 示例配置文件
 # 复制此文件为 config.yaml 并根据需要修改
 #
-# 此文件与 internal/infrastructure/config/config.go 中的 defaultConfig() 保持同步
+# 此文件与 internal/config/config.go 中的 defaultConfig() 保持同步
 # 所有配置项都可以通过环境变量覆盖 (环境变量前缀：APP_)
 # 例如：APP_SERVER_ADDR=:8080 会覆盖 server.addr 的值
 

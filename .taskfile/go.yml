@@ -14,13 +14,13 @@ vars:
   GO_BUILD_PATH: "{{.PATH_BIN}}/{{.GO_MODE_APP}}"
   GO_BUILD_LDFLAGS_SW: -s -w
   GO_BUILD_LDFLAGS_X: >-
-    -X '{{.GO_MODE_NAME}}/internal/commands/version.AppRawName={{.GO_MODE_APP}}'
-    -X '{{.GO_MODE_NAME}}/internal/commands/version.AppProject={{.GO_MODE_PROJ}}'
-    -X '{{.GO_MODE_NAME}}/internal/commands/version.AppVersion={{.GIT_TAG_LATEST}}'
-    -X '{{.GO_MODE_NAME}}/internal/commands/version.GitCommit={{.GIT_COMMIT}}'
-    -X '{{.GO_MODE_NAME}}/internal/commands/version.BuildTime={{.TIME_NOW}}'
-    -X '{{.GO_MODE_NAME}}/internal/commands/version.Developer={{.DEVELOPER}}'
-    -X '{{.GO_MODE_NAME}}/internal/commands/version.Workspace={{.PATH_REALPATH}}'
+    -X '{{.GO_MODE_NAME}}/internal/version.AppRawName={{.GO_MODE_APP}}'
+    -X '{{.GO_MODE_NAME}}/internal/version.AppProject={{.GO_MODE_PROJ}}'
+    -X '{{.GO_MODE_NAME}}/internal/version.AppVersion={{.GIT_TAG_LATEST}}'
+    -X '{{.GO_MODE_NAME}}/internal/version.GitCommit={{.GIT_COMMIT}}'
+    -X '{{.GO_MODE_NAME}}/internal/version.BuildTime={{.TIME_NOW}}'
+    -X '{{.GO_MODE_NAME}}/internal/version.Developer={{.DEVELOPER}}'
+    -X '{{.GO_MODE_NAME}}/internal/version.Workspace={{.PATH_REALPATH}}'
   GO_BUILD_LDFLAGS: "{{.GO_BUILD_LDFLAGS_SW}} {{.GO_BUILD_LDFLAGS_X}}"
 
 tasks:
