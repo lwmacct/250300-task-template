@@ -24,6 +24,7 @@ tasks:
     cmds:
       - |
         git add --all
+        git status
         git commit -m '{{.CLI_ARGS | default .TIME_NOW}}'
         git push
 
