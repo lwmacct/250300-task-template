@@ -17,7 +17,7 @@ repos:
     hooks:
       - id: prettier
         name: Format docs and configs with Prettier
-        entry: prettier --write --ignore-unknown --no-error-on-unmatched-pattern .
+        entry: prettier --write --ignore-unknown --no-error-on-unmatched-pattern
         language: system
         stages: [pre-commit]
 
