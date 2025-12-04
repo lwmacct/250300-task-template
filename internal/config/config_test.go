@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/knadh/koanf/parsers/yaml"
@@ -166,26 +167,65 @@ func writeConfigYAML(buf *bytes.Buffer, cfg Config) {
 `)
 
 	// 通过反射遍历 Config 结构体的字段
-	cfgVal := reflect.ValueOf(cfg)
-	cfgType := cfgVal.Type()
+	writeStructYAML(buf, reflect.ValueOf(cfg), reflect.TypeOf(cfg), 0)
+}
 
-	for i := 0; i < cfgType.NumField(); i++ {
-		field := cfgType.Field(i)
-		fieldVal := cfgVal.Field(i)
+// writeStructYAML 递归写入结构体的 YAML 格式
+func writeStructYAML(buf *bytes.Buffer, val reflect.Value, typ reflect.Type, indent int) {
+	prefix := strings.Repeat("  ", indent)
+
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		fieldVal := val.Field(i)
 
 		koanfKey := field.Tag.Get("koanf")
 		comment := field.Tag.Get("comment")
+		if koanfKey == "" {
+			continue
+		}
+
+		// 处理嵌套结构体
+		if field.Type.Kind() == reflect.Struct && field.Type.String() != "time.Duration" && field.Type.String() != "time.Time" {
+			fmt.Fprintf(buf, "\n%s# %s\n", prefix, comment)
+			fmt.Fprintf(buf, "%s%s:\n", prefix, koanfKey)
+			writeStructYAML(buf, fieldVal, field.Type, indent+1)
+			continue
+		}
 
 		// 根据字段类型输出不同格式
 		switch fieldVal.Kind() {
 		case reflect.String:
-			fmt.Fprintf(buf, "%s: %q # %s\n", koanfKey, fieldVal.String(), comment)
+			fmt.Fprintf(buf, "%s%s: %q # %s\n", prefix, koanfKey, fieldVal.String(), comment)
 		case reflect.Bool:
-			fmt.Fprintf(buf, "%s: %t # %s\n", koanfKey, fieldVal.Bool(), comment)
-		case reflect.Int:
-			fmt.Fprintf(buf, "%s: %d # %s\n", koanfKey, fieldVal.Int(), comment)
+			fmt.Fprintf(buf, "%s%s: %t # %s\n", prefix, koanfKey, fieldVal.Bool(), comment)
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			// 特殊处理 time.Duration
+			if field.Type.String() == "time.Duration" {
+				fmt.Fprintf(buf, "%s%s: %s # %s\n", prefix, koanfKey, fieldVal.Interface(), comment)
+			} else {
+				fmt.Fprintf(buf, "%s%s: %d # %s\n", prefix, koanfKey, fieldVal.Int(), comment)
+			}
+		case reflect.Slice:
+			if fieldVal.Len() == 0 {
+				fmt.Fprintf(buf, "%s%s: [] # %s\n", prefix, koanfKey, comment)
+			} else {
+				fmt.Fprintf(buf, "%s%s: # %s\n", prefix, koanfKey, comment)
+				for j := 0; j < fieldVal.Len(); j++ {
+					fmt.Fprintf(buf, "%s  - %v\n", prefix, fieldVal.Index(j).Interface())
+				}
+			}
+		case reflect.Map:
+			if fieldVal.Len() == 0 {
+				fmt.Fprintf(buf, "%s%s: {} # %s\n", prefix, koanfKey, comment)
+			} else {
+				fmt.Fprintf(buf, "%s%s: # %s\n", prefix, koanfKey, comment)
+				iter := fieldVal.MapRange()
+				for iter.Next() {
+					fmt.Fprintf(buf, "%s  %v: %v\n", prefix, iter.Key().Interface(), iter.Value().Interface())
+				}
+			}
 		default:
-			fmt.Fprintf(buf, "%s: %v # %s\n", koanfKey, fieldVal.Interface(), comment)
+			fmt.Fprintf(buf, "%s%s: %v # %s\n", prefix, koanfKey, fieldVal.Interface(), comment)
 		}
 	}
 }

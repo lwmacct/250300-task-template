@@ -6,7 +6,6 @@
 // 3. 环境变量 - 以 APP_ 为前缀 (如 APP_SERVER_ADDR)
 //
 // 重要提示：
-// - 如果修改了 defaultConfig() 中的默认值，请同步更新 config/config.example.yaml 示例文件
 // - 配置文件路径硬编码在 Load() 函数中：[]string{"config.yaml", "config/config.yaml"}
 package config
 
