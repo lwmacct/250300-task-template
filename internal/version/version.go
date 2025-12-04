@@ -1,3 +1,7 @@
+// Package version 提供应用程序的版本信息管理。
+//
+// 版本信息通过 go build -ldflags 在构建时注入。
+// Author: lwmacct (https://github.com/lwmacct)
 package version
 
 import (

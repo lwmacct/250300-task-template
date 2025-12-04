@@ -39,11 +39,11 @@ repos:
 
       - id: config-sync
         name: Sync and validate config files
-        entry: go test -run "TestGenerateExample|TestConfigKeysValid" ./internal/infrastructure/config/...
+        entry: go test -run "TestGenerateExample|TestConfigKeysValid" ./internal/config/...
         language: system
         pass_filenames: false
         stages: [pre-commit]
-        files: ^(internal/infrastructure/config/config\.go|configs/config\.yaml)$
+        files: ^(internal/config/config\.go|config/config\.yaml)$
 
 # 全局配置
 default_stages: [pre-commit]
