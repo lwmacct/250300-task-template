@@ -10,12 +10,10 @@ import (
 var defaults = config.DefaultConfig()
 
 var Command = &cli.Command{
-	Name:   "api",
-	Usage:  "简单的 Http 服务器",
-	Action: action,
-	Commands: []*cli.Command{
-		version.Command,
-	},
+	Name:     "api",
+	Usage:    "简单的 Http 服务器",
+	Action:   action,
+	Commands: []*cli.Command{version.Command},
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:    "addr",
