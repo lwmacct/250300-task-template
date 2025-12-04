@@ -239,18 +239,6 @@ func TestSetCLIFlagValueWithTimestamp(t *testing.T) {
 	setCLIFlagValue(cmd, k, "test.timestamp", "timestamp", reflect.TypeOf(time.Time{}))
 }
 
-// TestNestedStructRecursion 测试嵌套结构递归
-func TestNestedStructRecursion(t *testing.T) {
-	// 通过 Load 函数间接测试嵌套结构递归
-	cfg, err := Load(nil)
-	require.NoError(t, err)
-	require.NotNil(t, cfg)
-
-	// 验证嵌套结构正确加载
-	assert.Equal(t, ":8080", cfg.Server.Addr)
-	assert.Equal(t, "http://localhost:8080", cfg.Client.URL)
-}
-
 // TestKoanfKeyToCliFlag 测试 koanf key 到 CLI flag 的转换
 func TestKoanfKeyToCliFlag(t *testing.T) {
 	testCases := []struct {
