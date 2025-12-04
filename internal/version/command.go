@@ -4,6 +4,8 @@
 //   - 默认：详细版本信息
 //   - short：仅版本号
 //   - json：JSON 格式的完整信息
+//
+// Author: lwmacct (https://github.com/lwmacct)
 package version
 
 import (
