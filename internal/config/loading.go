@@ -51,13 +51,14 @@ func Load(cmd *cli.Command, envPrefix ...string) (*Config, error) {
 		slog.Debug("No config file found, using defaults and env vars")
 	}
 
-	// 3️⃣ 加载环境变量 (APP_HOST → host)
+	// 3️⃣ 加载环境变量 (APP_SERVER_ADDR → server.addr)
 	if err := k.Load(env.Provider(".", env.Opt{
 		Prefix: prefix,
 		TransformFunc: func(key, value string) (string, any) {
-			// APP_HOST → host
-			// APP_MAX_CONNS → max_conns
+			// APP_SERVER_ADDR → server.addr
+			// APP_CLIENT_URL → client.url
 			key = strings.ToLower(strings.TrimPrefix(key, prefix))
+			key = strings.ReplaceAll(key, "_", ".")
 			return key, value
 		},
 	}), nil); err != nil {
@@ -79,9 +80,31 @@ func Load(cmd *cli.Command, envPrefix ...string) (*Config, error) {
 	return &cfg, nil
 }
 
+// LoadServerConfig 加载服务端配置
+func LoadServerConfig(cmd *cli.Command, envPrefix ...string) (*ServerConfig, error) {
+	cfg, err := Load(cmd, envPrefix...)
+	if err != nil {
+		return nil, err
+	}
+	return &cfg.Server, nil
+}
+
+// LoadClientConfig 加载客户端配置
+func LoadClientConfig(cmd *cli.Command, envPrefix ...string) (*ClientConfig, error) {
+	cfg, err := Load(cmd, envPrefix...)
+	if err != nil {
+		return nil, err
+	}
+	return &cfg.Client, nil
+}
+
 // applyCLIFlags 通过反射将用户明确指定的 CLI flags 应用到 koanf 实例
 // 自动根据 Config 结构体的 koanf 标签映射 CLI flag 名称
 // koanf 标签使用 snake_case，CLI flag 使用 kebab-case
+//
+// 支持嵌套结构体，例如：
+//   - server.addr → --server-addr
+//   - client.server_url → --client-server-url
 //
 // 支持的类型：
 //   - 基本类型: string, bool
@@ -92,10 +115,13 @@ func Load(cmd *cli.Command, envPrefix ...string) (*Config, error) {
 //   - 切片类型: []string, []int, []int64, []float64 等
 //   - Map 类型: map[string]string
 func applyCLIFlags(cmd *cli.Command, k *koanf.Koanf) {
-	cfgType := reflect.TypeOf(Config{})
+	applyCLIFlagsRecursive(cmd, k, reflect.TypeOf(Config{}), "")
+}
 
-	for i := 0; i < cfgType.NumField(); i++ {
-		field := cfgType.Field(i)
+// applyCLIFlagsRecursive 递归遍历结构体字段应用 CLI flags
+func applyCLIFlagsRecursive(cmd *cli.Command, k *koanf.Koanf, typ reflect.Type, prefix string) {
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
 
 		// 获取 koanf 标签作为配置 key (snake_case)
 		koanfKey := field.Tag.Get("koanf")
@@ -103,8 +129,23 @@ func applyCLIFlags(cmd *cli.Command, k *koanf.Koanf) {
 			continue
 		}
 
+		// 构建完整的 koanf key 和 CLI flag 名称
+		fullKoanfKey := koanfKey
+		if prefix != "" {
+			fullKoanfKey = prefix + "." + koanfKey
+		}
+
 		// 转换为 CLI flag 名称 (kebab-case)
-		cliFlag := strings.ReplaceAll(koanfKey, "_", "-")
+		cliFlag := strings.ReplaceAll(fullKoanfKey, ".", "-")
+		cliFlag = strings.ReplaceAll(cliFlag, "_", "-")
+
+		// 如果是嵌套结构体，递归处理
+		if field.Type.Kind() == reflect.Struct &&
+			field.Type != reflect.TypeOf(time.Duration(0)) &&
+			field.Type != reflect.TypeOf(time.Time{}) {
+			applyCLIFlagsRecursive(cmd, k, field.Type, fullKoanfKey)
+			continue
+		}
 
 		// 只有用户明确指定时才覆盖
 		if !cmd.IsSet(cliFlag) {
@@ -112,7 +153,7 @@ func applyCLIFlags(cmd *cli.Command, k *koanf.Koanf) {
 		}
 
 		// 根据字段类型获取值并设置
-		setCLIFlagValue(cmd, k, koanfKey, cliFlag, field.Type)
+		setCLIFlagValue(cmd, k, fullKoanfKey, cliFlag, field.Type)
 	}
 }
 

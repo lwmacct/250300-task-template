@@ -10,11 +10,205 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+// TestDefaultConfig 测试默认配置值
+func TestDefaultConfig(t *testing.T) {
+	cfg := DefaultConfig()
+
+	// 验证 Server 配置
+	assert.Equal(t, ":8080", cfg.Server.Addr)
+	assert.Equal(t, "docs/.vitepress/dist", cfg.Server.Docs)
+	assert.Equal(t, 15*time.Second, cfg.Server.Timeout)
+	assert.Equal(t, 60*time.Second, cfg.Server.Idletime)
+
+	// 验证 Client 配置
+	assert.Equal(t, "http://localhost:8080", cfg.Client.URL)
+	assert.Equal(t, 30*time.Second, cfg.Client.Timeout)
+	assert.Equal(t, 3, cfg.Client.Retries)
+}
+
+// TestDefaultServerConfig 测试默认服务端配置
+func TestDefaultServerConfig(t *testing.T) {
+	cfg := DefaultServerConfig()
+
+	assert.Equal(t, ":8080", cfg.Addr)
+	assert.Equal(t, "docs/.vitepress/dist", cfg.Docs)
+	assert.Equal(t, 15*time.Second, cfg.Timeout)
+	assert.Equal(t, 60*time.Second, cfg.Idletime)
+}
+
+// TestDefaultClientConfig 测试默认客户端配置
+func TestDefaultClientConfig(t *testing.T) {
+	cfg := DefaultClientConfig()
+
+	assert.Equal(t, "http://localhost:8080", cfg.URL)
+	assert.Equal(t, 30*time.Second, cfg.Timeout)
+	assert.Equal(t, 3, cfg.Retries)
+}
+
+// TestLoadWithDefaults 测试使用默认值加载配置
+func TestLoadWithDefaults(t *testing.T) {
+	cfg, err := Load(nil)
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	// 验证使用默认值
+	expected := DefaultConfig()
+	assert.Equal(t, expected.Server.Addr, cfg.Server.Addr)
+	assert.Equal(t, expected.Client.URL, cfg.Client.URL)
+}
+
+// TestLoadServerConfig 测试加载服务端配置
+func TestLoadServerConfig(t *testing.T) {
+	cfg, err := LoadServerConfig(nil)
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	expected := DefaultServerConfig()
+	assert.Equal(t, expected.Addr, cfg.Addr)
+	assert.Equal(t, expected.Docs, cfg.Docs)
+}
+
+// TestLoadClientConfig 测试加载客户端配置
+func TestLoadClientConfig(t *testing.T) {
+	cfg, err := LoadClientConfig(nil)
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	expected := DefaultClientConfig()
+	assert.Equal(t, expected.URL, cfg.URL)
+	assert.Equal(t, expected.Timeout, cfg.Timeout)
+}
+
+// TestLoadWithEnvVars 测试使用环境变量加载配置
+func TestLoadWithEnvVars(t *testing.T) {
+	// 设置环境变量
+	_ = os.Setenv("APP_SERVER_ADDR", ":9090")
+	_ = os.Setenv("APP_CLIENT_URL", "http://test:8080")
+	defer func() {
+		_ = os.Unsetenv("APP_SERVER_ADDR")
+		_ = os.Unsetenv("APP_CLIENT_URL")
+	}()
+
+	cfg, err := Load(nil)
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	// 环境变量应该覆盖默认值
+	assert.Equal(t, ":9090", cfg.Server.Addr)
+	assert.Equal(t, "http://test:8080", cfg.Client.URL)
+}
+
+// TestLoadWithCustomEnvPrefix 测试使用自定义环境变量前缀
+func TestLoadWithCustomEnvPrefix(t *testing.T) {
+	// 设置自定义前缀的环境变量
+	_ = os.Setenv("MYAPP_SERVER_ADDR", ":7070")
+	defer func() { _ = os.Unsetenv("MYAPP_SERVER_ADDR") }()
+
+	cfg, err := Load(nil, "MYAPP_")
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	assert.Equal(t, ":7070", cfg.Server.Addr)
+}
+
+// TestLoadWithYAMLFile 测试从 YAML 文件加载配置
+func TestLoadWithYAMLFile(t *testing.T) {
+	// 创建临时配置文件
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.yaml")
+
+	configContent := `
+server:
+  addr: ":3000"
+  docs: "/custom/path"
+client:
+  url: "http://custom:3000"
+  retries: 5
+`
+	err := os.WriteFile(configPath, []byte(configContent), 0644)
+	require.NoError(t, err)
+
+	// 切换到临时目录
+	oldWd, _ := os.Getwd()
+	_ = os.Chdir(tmpDir)
+	defer func() { _ = os.Chdir(oldWd) }()
+
+	cfg, err := Load(nil)
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	assert.Equal(t, ":3000", cfg.Server.Addr)
+	assert.Equal(t, "/custom/path", cfg.Server.Docs)
+	assert.Equal(t, "http://custom:3000", cfg.Client.URL)
+	assert.Equal(t, 5, cfg.Client.Retries)
+}
+
+// TestLoadWithConfigSubdir 测试从 config/ 子目录加载配置
+func TestLoadWithConfigSubdir(t *testing.T) {
+	// 创建临时配置文件在 config/ 子目录
+	tmpDir := t.TempDir()
+	configDir := filepath.Join(tmpDir, "config")
+	err := os.MkdirAll(configDir, 0755)
+	require.NoError(t, err)
+
+	configPath := filepath.Join(configDir, "config.yaml")
+	configContent := `
+server:
+  addr: ":4000"
+`
+	err = os.WriteFile(configPath, []byte(configContent), 0644)
+	require.NoError(t, err)
+
+	// 切换到临时目录
+	oldWd, _ := os.Getwd()
+	_ = os.Chdir(tmpDir)
+	defer func() { _ = os.Chdir(oldWd) }()
+
+	cfg, err := Load(nil)
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	assert.Equal(t, ":4000", cfg.Server.Addr)
+}
+
+// TestConfigPriority 测试配置优先级
+func TestConfigPriority(t *testing.T) {
+	// 创建临时配置文件
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.yaml")
+
+	configContent := `
+server:
+  addr: ":3000"
+`
+	err := os.WriteFile(configPath, []byte(configContent), 0644)
+	require.NoError(t, err)
+
+	// 设置环境变量（优先级高于配置文件）
+	_ = os.Setenv("APP_SERVER_ADDR", ":4000")
+	defer func() { _ = os.Unsetenv("APP_SERVER_ADDR") }()
+
+	// 切换到临时目录
+	oldWd, _ := os.Getwd()
+	_ = os.Chdir(tmpDir)
+	defer func() { _ = os.Chdir(oldWd) }()
+
+	cfg, err := Load(nil)
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	// 环境变量应该覆盖配置文件
+	assert.Equal(t, ":4000", cfg.Server.Addr)
+}
 
 // TestGenerateExample 生成 config/config.example.yaml 配置示例文件
 //
@@ -130,6 +324,22 @@ func TestStructTags(t *testing.T) {
 	checkKoanfTags(t, cfgType, "Config")
 }
 
+// TestServerConfigStructTags 验证 ServerConfig 结构体字段标签
+func TestServerConfigStructTags(t *testing.T) {
+	cfg := DefaultServerConfig()
+	cfgType := reflect.TypeOf(cfg)
+
+	checkKoanfTags(t, cfgType, "ServerConfig")
+}
+
+// TestClientConfigStructTags 验证 ClientConfig 结构体字段标签
+func TestClientConfigStructTags(t *testing.T) {
+	cfg := DefaultClientConfig()
+	cfgType := reflect.TypeOf(cfg)
+
+	checkKoanfTags(t, cfgType, "ClientConfig")
+}
+
 // findProjectRoot 通过查找 go.mod 文件定位项目根目录
 func findProjectRoot() (string, error) {
 	// 获取当前测试文件所在目录
@@ -162,8 +372,7 @@ func writeConfigYAML(buf *bytes.Buffer, cfg Config) {
 #
 # 此文件与 internal/config/config.go 中的 DefaultConfig() 保持同步
 # 所有配置项都可以通过环境变量覆盖 (默认的环境变量前缀：APP_)
-# 例如：APP_HOST=0.0.0.0 会覆盖 host 的值
-
+# 例如：APP_SERVER_ADDR=0.0.0.0:8080 会覆盖 server.addr 的值
 `)
 
 	// 通过反射遍历 Config 结构体的字段
@@ -248,5 +457,58 @@ func checkKoanfTags(t *testing.T, typ reflect.Type, path string) {
 		if koanfTag == "" {
 			t.Errorf("字段 %s 缺少 koanf 标签", fieldPath)
 		}
+
+		// 检查 comment 标签
+		commentTag := field.Tag.Get("comment")
+		if commentTag == "" {
+			t.Errorf("字段 %s 缺少 comment 标签", fieldPath)
+		}
+
+		// 递归检查嵌套结构体
+		if field.Type.Kind() == reflect.Struct &&
+			field.Type.String() != "time.Duration" &&
+			field.Type.String() != "time.Time" {
+			checkKoanfTags(t, field.Type, fieldPath)
+		}
 	}
+}
+
+// TestWriteConfigYAML 测试 YAML 生成功能
+func TestWriteConfigYAML(t *testing.T) {
+	cfg := DefaultConfig()
+
+	var buf bytes.Buffer
+	writeConfigYAML(&buf, cfg)
+
+	content := buf.String()
+
+	// 验证生成的 YAML 包含关键内容
+	assert.Contains(t, content, "server:")
+	assert.Contains(t, content, "client:")
+	assert.Contains(t, content, "addr:")
+	assert.Contains(t, content, "url:")
+	assert.Contains(t, content, "# 服务端配置")
+	assert.Contains(t, content, "# 客户端配置")
+}
+
+// TestContainsKey 测试 containsKey 函数
+func TestContainsKey(t *testing.T) {
+	keys := []string{"server.addr", "client.url", "debug"}
+
+	assert.True(t, containsKey(keys, "server.addr"))
+	assert.True(t, containsKey(keys, "client.url"))
+	assert.True(t, containsKey(keys, "debug"))
+	assert.False(t, containsKey(keys, "nonexistent"))
+	assert.False(t, containsKey(keys, ""))
+}
+
+// TestFindProjectRoot 测试 findProjectRoot 函数
+func TestFindProjectRoot(t *testing.T) {
+	root, err := findProjectRoot()
+	require.NoError(t, err)
+
+	// 验证找到的目录包含 go.mod
+	goModPath := filepath.Join(root, "go.mod")
+	_, err = os.Stat(goModPath)
+	assert.NoError(t, err)
 }

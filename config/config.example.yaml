@@ -3,7 +3,17 @@
 #
 # 此文件与 internal/config/config.go 中的 DefaultConfig() 保持同步
 # 所有配置项都可以通过环境变量覆盖 (默认的环境变量前缀：APP_)
-# 例如：APP_HOST=0.0.0.0 会覆盖 host 的值
+# 例如：APP_SERVER_ADDR=0.0.0.0:8080 会覆盖 server.addr 的值
 
-addr: ":8080" # 服务器监听地址
-dist_docs: "docs/.vitepress/dist" # VitePress 文档目录路径
+# 服务端配置
+server:
+  addr: ":8080" # 服务器监听地址
+  docs: "docs/.vitepress/dist" # VitePress 文档目录路径
+  timeout: 15s # HTTP 读写超时
+  idletime: 1m0s # HTTP 空闲超时
+
+# 客户端配置
+client:
+  url: "http://localhost:8080" # 服务器地址
+  timeout: 30s # 请求超时时间
+  retries: 3 # 重试次数
