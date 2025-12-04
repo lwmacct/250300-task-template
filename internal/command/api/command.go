@@ -1,9 +1,13 @@
 package api
 
 import (
+	"github.com/lwmacct/251128-workspace/internal/config"
 	"github.com/lwmacct/251128-workspace/internal/version"
 	"github.com/urfave/cli/v3"
 )
+
+// 默认配置 - 单一来源 (Single Source of Truth)
+var defaults = config.DefaultConfig()
 
 var Command = &cli.Command{
 	Name:   "api",
@@ -16,12 +20,12 @@ var Command = &cli.Command{
 		&cli.StringFlag{
 			Name:    "addr",
 			Aliases: []string{"a"},
-			Value:   ":8080",
+			Value:   defaults.Addr,
 			Usage:   "服务器监听地址",
 		},
 		&cli.StringFlag{
 			Name:  "dist_docs",
-			Value: "docs/.vitepress/dist",
+			Value: defaults.DistDocs,
 			Usage: "VitePress 文档目录路径",
 		},
 	},

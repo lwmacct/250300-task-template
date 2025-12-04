@@ -7,9 +7,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
-	"strings"
 	"testing"
-	"time"
 
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
@@ -32,14 +30,20 @@ func TestGenerateExample(t *testing.T) {
 	}
 
 	// 获取默认配置
-	cfg := defaultConfig()
+	cfg := DefaultConfig()
 
 	// 生成 YAML 内容
 	var buf bytes.Buffer
 	writeConfigYAML(&buf, cfg)
 
+	// 确保 config 目录存在
+	configDir := filepath.Join(projectRoot, "config")
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		t.Fatalf("创建 config 目录失败: %v", err)
+	}
+
 	// 写入文件
-	outputPath := filepath.Join(projectRoot, "config", "config.example.yaml")
+	outputPath := filepath.Join(configDir, "config.example.yaml")
 	if err := os.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
 		t.Fatalf("写入配置文件失败: %v", err)
 	}
@@ -117,7 +121,7 @@ func containsKey(keys []string, key string) bool {
 
 // TestStructTags 验证 Config 结构体字段与 koanf 标签一致性
 func TestStructTags(t *testing.T) {
-	cfg := defaultConfig()
+	cfg := DefaultConfig()
 	cfgType := reflect.TypeOf(cfg)
 
 	// 验证所有字段都有 koanf 标签
@@ -151,12 +155,12 @@ func findProjectRoot() (string, error) {
 // 通过反射读取 koanf 和 comment tag 自动生成 YAML
 func writeConfigYAML(buf *bytes.Buffer, cfg Config) {
 	// 写入文件头注释
-	buf.WriteString(`# 示例配置文件
+	buf.WriteString(`# 配置示例文件
 # 复制此文件为 config.yaml 并根据需要修改
 #
-# 此文件与 internal/config/config.go 中的 defaultConfig() 保持同步
-# 所有配置项都可以通过环境变量覆盖 (环境变量前缀：APP_)
-# 例如：APP_SERVER_ADDR=:8080 会覆盖 server.addr 的值
+# 此文件与 internal/config/config.go 中的 DefaultConfig() 保持同步
+# 所有配置项都可以通过环境变量覆盖 (默认的环境变量前缀：APP_)
+# 例如：APP_HOST=0.0.0.0 会覆盖 host 的值
 
 `)
 
@@ -169,79 +173,23 @@ func writeConfigYAML(buf *bytes.Buffer, cfg Config) {
 		fieldVal := cfgVal.Field(i)
 
 		koanfKey := field.Tag.Get("koanf")
-		sectionComment := field.Tag.Get("comment")
-
-		// 写入配置段注释和名称
-		fmt.Fprintf(buf, "# %s\n", sectionComment)
-		fmt.Fprintf(buf, "%s:\n", koanfKey)
-
-		// 写入该配置段下的所有字段
-		writeStructFields(buf, fieldVal)
-
-		// 配置段之间添加空行（最后一个除外）
-		if i < cfgType.NumField()-1 {
-			buf.WriteString("\n")
-		}
-	}
-}
-
-// writeStructFields 通过反射写入结构体的所有字段
-func writeStructFields(buf *bytes.Buffer, structVal reflect.Value) {
-	structType := structVal.Type()
-
-	for i := 0; i < structType.NumField(); i++ {
-		field := structType.Field(i)
-		fieldVal := structVal.Field(i)
-
-		koanfKey := field.Tag.Get("koanf")
 		comment := field.Tag.Get("comment")
 
 		// 根据字段类型输出不同格式
 		switch fieldVal.Kind() {
 		case reflect.String:
-			fmt.Fprintf(buf, "  %s: %q # %s\n", koanfKey, fieldVal.String(), comment)
+			fmt.Fprintf(buf, "%s: %q # %s\n", koanfKey, fieldVal.String(), comment)
 		case reflect.Bool:
-			fmt.Fprintf(buf, "  %s: %t # %s\n", koanfKey, fieldVal.Bool(), comment)
-		case reflect.Int64:
-			// 处理 time.Duration 类型
-			if field.Type == reflect.TypeOf(time.Duration(0)) {
-				duration := time.Duration(fieldVal.Int())
-				fmt.Fprintf(buf, "  %s: %q # %s\n", koanfKey, formatDuration(duration), comment)
-			} else {
-				fmt.Fprintf(buf, "  %s: %d # %s\n", koanfKey, fieldVal.Int(), comment)
-			}
+			fmt.Fprintf(buf, "%s: %t # %s\n", koanfKey, fieldVal.Bool(), comment)
+		case reflect.Int:
+			fmt.Fprintf(buf, "%s: %d # %s\n", koanfKey, fieldVal.Int(), comment)
 		default:
-			// 其他类型使用默认格式
-			fmt.Fprintf(buf, "  %s: %v # %s\n", koanfKey, fieldVal.Interface(), comment)
+			fmt.Fprintf(buf, "%s: %v # %s\n", koanfKey, fieldVal.Interface(), comment)
 		}
 	}
 }
 
-// formatDuration 将 time.Duration 转换为人类可读的字符串格式
-func formatDuration(d time.Duration) string {
-	if d == 0 {
-		return "0s"
-	}
-
-	// 尝试简化为最大单位
-	if d%(24*time.Hour) == 0 {
-		hours := d / time.Hour
-		return fmt.Sprintf("%dh", hours)
-	}
-	if d%time.Hour == 0 {
-		return fmt.Sprintf("%dh", d/time.Hour)
-	}
-	if d%time.Minute == 0 {
-		return fmt.Sprintf("%dm", d/time.Minute)
-	}
-	if d%time.Second == 0 {
-		return fmt.Sprintf("%ds", d/time.Second)
-	}
-
-	return d.String()
-}
-
-// checkKoanfTags 递归检查结构体字段的 koanf 标签
+// checkKoanfTags 检查结构体字段的 koanf 标签
 func checkKoanfTags(t *testing.T, typ reflect.Type, path string) {
 	if typ.Kind() == reflect.Pointer {
 		typ = typ.Elem()
@@ -258,11 +206,6 @@ func checkKoanfTags(t *testing.T, typ reflect.Type, path string) {
 		koanfTag := field.Tag.Get("koanf")
 		if koanfTag == "" {
 			t.Errorf("字段 %s 缺少 koanf 标签", fieldPath)
-		}
-
-		// 递归检查嵌套结构体
-		if field.Type.Kind() == reflect.Struct && !strings.HasPrefix(field.Type.String(), "time.") {
-			checkKoanfTags(t, field.Type, fieldPath)
 		}
 	}
 }

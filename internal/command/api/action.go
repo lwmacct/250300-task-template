@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/lwmacct/251125-go-mod-logger/pkg/logger"
+	"github.com/lwmacct/251128-workspace/internal/config"
 	"github.com/urfave/cli/v3"
 )
 
@@ -20,8 +21,11 @@ func action(ctx context.Context, cmd *cli.Command) error {
 		slog.Warn("初始化日志系统失败，使用默认配置", "error", err)
 	}
 
-	addr := cmd.String("addr")
-	docsDir := cmd.String("dist_docs")
+	// 加载配置：默认值 → 配置文件 → 环境变量 → CLI flags
+	cfg, err := config.Load(cmd)
+	if err != nil {
+		return err
+	}
 
 	mux := http.NewServeMux()
 
@@ -33,7 +37,7 @@ func action(ctx context.Context, cmd *cli.Command) error {
 	})
 
 	// VitePress 文档静态文件服务
-	docsFS := http.FileServer(http.Dir(docsDir))
+	docsFS := http.FileServer(http.Dir(cfg.DistDocs))
 	mux.Handle("/docs/", http.StripPrefix("/docs/", docsFS))
 
 	// 默认首页（{$} 精确匹配根路径）
@@ -43,7 +47,7 @@ func action(ctx context.Context, cmd *cli.Command) error {
 	})
 
 	server := &http.Server{
-		Addr:         addr,
+		Addr:         cfg.Addr,
 		Handler:      mux,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
@@ -52,7 +56,7 @@ func action(ctx context.Context, cmd *cli.Command) error {
 
 	// 启动服务器（非阻塞）
 	go func() {
-		slog.Info("Server starting", "addr", addr)
+		slog.Info("Server starting", "addr", cfg.Addr)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			slog.Error("Server error", "error", err)
 			os.Exit(1)
