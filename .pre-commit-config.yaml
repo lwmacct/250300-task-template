@@ -55,4 +55,3 @@ repos:
 # 全局配置
 default_stages: [pre-commit]
 fail_fast: true
-verbose: true
