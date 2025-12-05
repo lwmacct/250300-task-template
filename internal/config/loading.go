@@ -62,13 +62,13 @@ func Load(cmd *cli.Command, configPath, AppRawName string) (*Config, error) {
 		if err := k.Load(file.Provider(configPath), yaml.Parser()); err != nil {
 			return nil, fmt.Errorf("failed to load config file %s: %w", configPath, err)
 		}
-		slog.Info("Loaded config from specified file", "path", configPath)
+		slog.Debug("Loaded config from specified file", "path", configPath)
 		configLoaded = true
 	} else {
 		// 搜索默认配置文件路径
 		for _, path := range defaultConfigPaths(AppRawName) {
 			if err := k.Load(file.Provider(path), yaml.Parser()); err == nil {
-				slog.Info("Loaded config from file", "path", path)
+				slog.Debug("Loaded config from file", "path", path)
 				configLoaded = true
 				break
 			}
