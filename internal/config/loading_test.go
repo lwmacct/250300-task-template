@@ -123,14 +123,17 @@ func findProjectRoot() (string, error) {
 
 	dir := filepath.Dir(filename)
 
-	// 向上查找 go.mod 文件
+	// 预先构建 go.mod 路径，避免重复拼接
+	sep := string(filepath.Separator)
 	for {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+		goModPath := dir + sep + "go.mod"
+		if _, err := os.Stat(goModPath); err == nil {
 			return dir, nil
 		}
+
 		parent := filepath.Dir(dir)
-		if parent == dir {
-			return "", fmt.Errorf("未找到 go.mod 文件")
+		if parent == dir { // 到达根目录
+			return "", fmt.Errorf("未找到 go.mod 文件（从 %s 向上查找）", dir)
 		}
 		dir = parent
 	}
