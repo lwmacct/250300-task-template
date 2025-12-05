@@ -31,6 +31,7 @@ repos:
         pass_filenames: false
         language: system
         stages: [pre-commit]
+        files: \.md$
 
       - id: build-docs
         name: Build VitePress docs
