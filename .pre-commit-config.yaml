@@ -38,7 +38,7 @@ repos:
 
       - id: golangci-lint
         name: Run golangci-lint on new changes
-        entry: golangci-lint run --new --fix --verbose
+        entry: golangci-lint run --new --fix
         language: system
         pass_filenames: false
         stages: [pre-commit]
