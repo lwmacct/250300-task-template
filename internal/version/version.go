@@ -8,6 +8,7 @@ package version
 import (
 	"fmt"
 	"path"
+	"regexp"
 	"runtime"
 	"runtime/debug"
 	"strings"
@@ -26,6 +27,9 @@ var (
 	Workspace  string = "Unknown" // 构建时工作目录，用于去除堆栈中的绝对路径
 )
 
+// datePrefix 用于匹配项目名称前缀中的日期格式（如 "251203-"）
+var datePrefix = regexp.MustCompile(`^[0-9-]{7}`)
+
 func init() {
 	initFromBuildInfo()
 }
@@ -38,9 +42,16 @@ func initFromBuildInfo() {
 		return
 	}
 
-	// 从模块路径提取项目名称
-	if AppProject == "Unknown" && info.Main.Path != "" {
-		AppProject = path.Base(info.Main.Path)
+	// 从模块路径提取项目名称和开发者
+	if info.Main.Path != "" {
+		parts := strings.Split(info.Main.Path, "/")
+		if AppProject == "Unknown" {
+			AppProject = path.Base(info.Main.Path)
+		}
+		// 从 <domain>/<user>/<repo> 格式中提取开发者
+		if Developer == "Unknown" && len(parts) >= 2 {
+			Developer = "http://" + parts[0] + "/" + parts[1] // 第二部分是用户名/组织名
+		}
 	}
 
 	// 从模块版本提取应用版本
@@ -70,6 +81,11 @@ func initFromBuildInfo() {
 				GitCommit = GitCommit + "-dirty"
 			}
 		}
+	}
+
+	// 从 AppProject 中提取 AppRawName（去除日期前缀）
+	if AppRawName == "Unknown" && AppProject != "Unknown" {
+		AppRawName = datePrefix.ReplaceAllString(AppProject, "")
 	}
 }
 
@@ -106,6 +122,11 @@ func GetVersion() string {
 // GetShortVersion 返回简短版本号 (兼容性函数)
 func GetShortVersion() string {
 	return AppVersion
+}
+
+// GetAppRawName 返回应用原始名称
+func GetAppRawName() string {
+	return AppRawName
 }
 
 // GetBuildInfo 返回构建相关信息 (用于健康检查等)

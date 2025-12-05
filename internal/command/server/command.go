@@ -12,13 +12,11 @@ import (
 	"syscall"
 
 	"github.com/lwmacct/251125-go-mod-logger/pkg/logger"
+	"github.com/lwmacct/251128-workspace/internal/command"
 	"github.com/lwmacct/251128-workspace/internal/config"
 	"github.com/lwmacct/251128-workspace/internal/version"
 	"github.com/urfave/cli/v3"
 )
-
-// defaults 默认配置 - 单一来源 (Single Source of Truth)
-var defaults = config.DefaultServerConfig()
 
 // Command 服务器命令
 var Command = &cli.Command{
@@ -30,22 +28,22 @@ var Command = &cli.Command{
 		&cli.StringFlag{
 			Name:    "server-addr",
 			Aliases: []string{"a"},
-			Value:   defaults.Addr,
+			Value:   command.Defaults.Server.Addr,
 			Usage:   "服务器监听地址",
 		},
 		&cli.StringFlag{
 			Name:  "server-docs",
-			Value: defaults.Docs,
+			Value: command.Defaults.Server.Docs,
 			Usage: "VitePress 文档目录路径",
 		},
 		&cli.DurationFlag{
 			Name:  "server-timeout",
-			Value: defaults.Timeout,
+			Value: command.Defaults.Server.Timeout,
 			Usage: "HTTP 读写超时",
 		},
 		&cli.DurationFlag{
 			Name:  "server-idletime",
-			Value: defaults.Idletime,
+			Value: command.Defaults.Server.Idletime,
 			Usage: "HTTP 空闲超时",
 		},
 	},
@@ -57,7 +55,7 @@ func action(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// 加载配置：默认值 → 配置文件 → 环境变量 → CLI flags
-	cfg, err := config.LoadServerConfig(cmd)
+	cfg, err := config.Load(cmd, "", version.AppRawName)
 	if err != nil {
 		return err
 	}
@@ -72,7 +70,7 @@ func action(ctx context.Context, cmd *cli.Command) error {
 	})
 
 	// VitePress 文档静态文件服务
-	docsFS := http.FileServer(http.Dir(cfg.Docs))
+	docsFS := http.FileServer(http.Dir(cfg.Server.Docs))
 	mux.Handle("/docs/", http.StripPrefix("/docs/", docsFS))
 
 	// 默认首页（{$} 精确匹配根路径）
@@ -82,16 +80,16 @@ func action(ctx context.Context, cmd *cli.Command) error {
 	})
 
 	server := &http.Server{
-		Addr:         cfg.Addr,
+		Addr:         cfg.Server.Addr,
 		Handler:      mux,
-		ReadTimeout:  cfg.Timeout,
-		WriteTimeout: cfg.Timeout,
-		IdleTimeout:  cfg.Idletime,
+		ReadTimeout:  cfg.Server.Timeout,
+		WriteTimeout: cfg.Server.Timeout,
+		IdleTimeout:  cfg.Server.Idletime,
 	}
 
 	// 启动服务器（非阻塞）
 	go func() {
-		slog.Info("Server starting", "addr", cfg.Addr)
+		slog.Info("Server starting", "addr", cfg.Server.Addr)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			slog.Error("Server error", "error", err)
 			os.Exit(1)
@@ -106,7 +104,7 @@ func action(ctx context.Context, cmd *cli.Command) error {
 	slog.Info("Shutting down")
 
 	// 优雅关闭，最多等待 10 秒
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.Server.Timeout)
 	defer cancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {

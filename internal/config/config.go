@@ -1,14 +1,10 @@
 // Package config 提供应用配置管理
 //
-// 配置加载优先级 (从低到高) ：
-// 1. 默认值 - defaultConfig() 函数中定义
-// 2. 配置文件 - config.yaml 或 config/config.yaml
-// 3. 环境变量 - 以 APP_ 为前缀，下划线分隔嵌套路径
-//    例如: APP_SERVER_ADDR=:9090 → server.addr
-//          APP_CLIENT_URL=http://... → client.url
-//
-// 重要提示：
-// - 配置文件路径硬编码在 Load() 函数中：[]string{"config.yaml", "config/config.yaml"}
+// 配置加载优先级 (从低到高)：
+//  1. 默认值 - DefaultConfig() 函数中定义
+//  2. 配置文件 - 通过 --config 指定，或按顺序搜索默认路径
+//  3. 环境变量 - 以 <AppRawName> 为前缀，下划线分隔嵌套路径
+//  4. CLI flags - 最高优先级
 package config
 
 import "time"
@@ -50,14 +46,4 @@ func DefaultConfig() Config {
 			Retries: 3,
 		},
 	}
-}
-
-// DefaultServerConfig 返回默认服务端配置
-func DefaultServerConfig() ServerConfig {
-	return DefaultConfig().Server
-}
-
-// DefaultClientConfig 返回默认客户端配置
-func DefaultClientConfig() ClientConfig {
-	return DefaultConfig().Client
 }

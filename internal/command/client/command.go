@@ -11,13 +11,11 @@ import (
 	"strings"
 
 	"github.com/lwmacct/251125-go-mod-logger/pkg/logger"
+	"github.com/lwmacct/251128-workspace/internal/command"
 	"github.com/lwmacct/251128-workspace/internal/config"
 	"github.com/lwmacct/251128-workspace/internal/version"
 	"github.com/urfave/cli/v3"
 )
-
-// defaults 默认配置 - 单一来源 (Single Source of Truth)
-var defaults = config.DefaultClientConfig()
 
 // Command 客户端命令
 var Command = &cli.Command{
@@ -29,17 +27,17 @@ var Command = &cli.Command{
 		&cli.StringFlag{
 			Name:    "client-url",
 			Aliases: []string{"s"},
-			Value:   defaults.URL,
+			Value:   command.Defaults.Client.URL,
 			Usage:   "服务器地址",
 		},
 		&cli.DurationFlag{
 			Name:  "client-timeout",
-			Value: defaults.Timeout,
+			Value: command.Defaults.Client.Timeout,
 			Usage: "请求超时时间",
 		},
 		&cli.IntFlag{
 			Name:  "client-retries",
-			Value: defaults.Retries,
+			Value: command.Defaults.Client.Retries,
 			Usage: "重试次数",
 		},
 	},
@@ -70,18 +68,18 @@ func healthAction(ctx context.Context, cmd *cli.Command) error {
 		slog.Warn("初始化日志系统失败，使用默认配置", "error", err)
 	}
 
-	cfg, err := config.LoadClientConfig(cmd)
+	cfg, err := config.Load(cmd, "", version.AppRawName)
 	if err != nil {
 		return err
 	}
 
-	client := NewHTTPClient(cfg)
+	client := NewHTTPClient(&cfg.Client)
 	resp, err := client.Health(ctx)
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
 
-	fmt.Printf("Server: %s\n", cfg.URL)
+	fmt.Printf("Server: %s\n", cfg.Client.URL)
 	fmt.Printf("Status: %s\n", resp.Status)
 	return nil
 }
@@ -91,7 +89,7 @@ func getAction(ctx context.Context, cmd *cli.Command) error {
 		slog.Warn("初始化日志系统失败，使用默认配置", "error", err)
 	}
 
-	cfg, err := config.LoadClientConfig(cmd)
+	cfg, err := config.Load(cmd, "", version.AppRawName)
 	if err != nil {
 		return err
 	}
@@ -101,7 +99,7 @@ func getAction(ctx context.Context, cmd *cli.Command) error {
 		path = cmd.Args().First()
 	}
 
-	client := NewHTTPClient(cfg)
+	client := NewHTTPClient(&cfg.Client)
 	body, err := client.Get(ctx, path)
 	if err != nil {
 		return fmt.Errorf("GET request failed: %w", err)

@@ -4,6 +4,8 @@ package config
 import (
 	"fmt"
 	"log/slog"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
@@ -16,18 +18,34 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+// 默认配置文件搜索路径
+func defaultConfigPaths(appRawName string) []string {
+	paths := []string{
+		"config.yaml",
+		"config/config.yaml",
+	}
+
+	// 添加用户主目录
+	if home, err := os.UserHomeDir(); err == nil {
+		paths = append(paths, filepath.Join(home, "."+appRawName+".yaml"))
+	}
+
+	// 添加系统配置目录
+	paths = append(paths, "/etc/"+appRawName+"/config.yaml")
+	return paths
+}
+
 // Load 加载配置，按优先级合并：
 // 1. 默认值 (最低优先级)
-// 2. 配置文件 (config.yaml)
-// 3. 环境变量 (默认前缀 APP_*)
+// 2. 配置文件 (通过 configPath 指定，或搜索默认路径)
+// 3. 环境变量前缀
 // 4. CLI flags (最高优先级)
-//
-// envPrefix 可选，默认 "APP_"
-func Load(cmd *cli.Command, envPrefix ...string) (*Config, error) {
-	prefix := "APP_"
-	if len(envPrefix) > 0 && envPrefix[0] != "" {
-		prefix = envPrefix[0]
+func Load(cmd *cli.Command, configPath, AppRawName string) (*Config, error) {
+	if AppRawName == "" || AppRawName == "Unknown" {
+		AppRawName = "app"
 	}
+
+	EnvPrefix := strings.ReplaceAll(strings.ToUpper(AppRawName), "-", "_")
 
 	k := koanf.New(".")
 
@@ -36,28 +54,36 @@ func Load(cmd *cli.Command, envPrefix ...string) (*Config, error) {
 		return nil, fmt.Errorf("failed to load default config: %w", err)
 	}
 
-	// 2️⃣ 加载 YAML 配置文件 (可选，文件不存在不报错)
-	// 按优先级搜索：当前目录 -> config 目录
-	configPaths := []string{"config.yaml", "config/config.yaml"}
+	// 2️⃣ 加载配置文件
 	configLoaded := false
-	for _, path := range configPaths {
-		if err := k.Load(file.Provider(path), yaml.Parser()); err == nil {
-			slog.Info("Loaded config from file", "path", path)
-			configLoaded = true
-			break
+
+	if configPath != "" {
+		// 用户指定了配置文件路径
+		if err := k.Load(file.Provider(configPath), yaml.Parser()); err != nil {
+			return nil, fmt.Errorf("failed to load config file %s: %w", configPath, err)
+		}
+		slog.Info("Loaded config from specified file", "path", configPath)
+		configLoaded = true
+	} else {
+		// 搜索默认配置文件路径
+		for _, path := range defaultConfigPaths(AppRawName) {
+			if err := k.Load(file.Provider(path), yaml.Parser()); err == nil {
+				slog.Info("Loaded config from file", "path", path)
+				configLoaded = true
+				break
+			}
 		}
 	}
+
 	if !configLoaded {
 		slog.Debug("No config file found, using defaults and env vars")
 	}
 
-	// 3️⃣ 加载环境变量 (APP_SERVER_ADDR → server.addr)
+	// 3️⃣ 加载环境变量
 	if err := k.Load(env.Provider(".", env.Opt{
-		Prefix: prefix,
+		Prefix: EnvPrefix,
 		TransformFunc: func(key, value string) (string, any) {
-			// APP_SERVER_ADDR → server.addr
-			// APP_CLIENT_URL → client.url
-			key = strings.ToLower(strings.TrimPrefix(key, prefix))
+			key = strings.ToLower(strings.TrimPrefix(key, EnvPrefix))
 			key = strings.ReplaceAll(key, "_", ".")
 			return key, value
 		},
@@ -66,7 +92,6 @@ func Load(cmd *cli.Command, envPrefix ...string) (*Config, error) {
 	}
 
 	// 4️⃣ 加载 CLI flags (最高优先级，仅当用户明确指定时)
-	// 使用 cmd.IsSet() 检查用户是否明确指定了该 flag
 	if cmd != nil {
 		applyCLIFlags(cmd, k)
 	}
@@ -80,31 +105,13 @@ func Load(cmd *cli.Command, envPrefix ...string) (*Config, error) {
 	return &cfg, nil
 }
 
-// LoadServerConfig 加载服务端配置
-func LoadServerConfig(cmd *cli.Command, envPrefix ...string) (*ServerConfig, error) {
-	cfg, err := Load(cmd, envPrefix...)
-	if err != nil {
-		return nil, err
-	}
-	return &cfg.Server, nil
-}
-
-// LoadClientConfig 加载客户端配置
-func LoadClientConfig(cmd *cli.Command, envPrefix ...string) (*ClientConfig, error) {
-	cfg, err := Load(cmd, envPrefix...)
-	if err != nil {
-		return nil, err
-	}
-	return &cfg.Client, nil
-}
-
 // applyCLIFlags 通过反射将用户明确指定的 CLI flags 应用到 koanf 实例
 // 自动根据 Config 结构体的 koanf 标签映射 CLI flag 名称
 // koanf 标签使用 snake_case，CLI flag 使用 kebab-case
 //
 // 支持嵌套结构体，例如：
-//   - server.addr → --server-addr
-//   - client.server_url → --client-server-url
+//   - server.url → --server-url
+//   - tls.skip_verify → --tls-skip-verify
 //
 // 支持的类型：
 //   - 基本类型: string, bool
