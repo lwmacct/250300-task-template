@@ -143,12 +143,7 @@ func findProjectRoot() (string, error) {
 // 通过反射读取 koanf 和 comment tag 自动生成 YAML
 func writeConfigYAML(buf *bytes.Buffer, cfg Config) {
 	// 写入文件头注释
-	buf.WriteString(`# 配置示例文件
-# 复制此文件为 config.yaml 并根据需要修改
-#
-# 此文件与 internal/config/config.go 中的 DefaultConfig() 保持同步
-# 所有配置项都可以通过环境变量覆盖 (默认的环境变量前缀：APP_)
-# 例如：APP_SERVER_ADDR=0.0.0.0:8080 会覆盖 server.addr 的值
+	buf.WriteString(`# 配置示例文件, 复制此文件为 config.yaml 并根据需要修改
 `)
 
 	// 通过反射遍历 Config 结构体的字段
