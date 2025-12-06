@@ -3,7 +3,7 @@
 **/.local/*
 **/.venv/*
 **/.conda/*
-**/.taskfile/.env
+**/.task/remote/*
 
 # 秘密文件
 **/.env
