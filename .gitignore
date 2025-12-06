@@ -8,6 +8,7 @@
 # 秘密文件
 **/.env
 **/.secret/*
+**/.config/secrets.yaml
 
 # node_modules
 **/node_modules/**

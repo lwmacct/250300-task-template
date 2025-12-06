@@ -8,5 +8,8 @@
     "@types/node": "^24.10.1",
     "mermaid": "^11.12.1",
     "vitepress": "^2.0.0-alpha.15"
+  },
+  "dependencies": {
+    "mdast-util-to-hast": "^13.2.1"
   }
 }
