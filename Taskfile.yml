@@ -9,16 +9,16 @@ dotenv: [".env", ".env.example", "{{.HOME}}/.env"]
 
 includes:
   env:
-    taskfile: https://raw.githubusercontent.com/lwmacct/251207-task-remote/refs/heads/main/.task/env.yml
+    taskfile: https://github.com/lwmacct/251207-task-remote.git//.task/env.yml
     optional: true
     flatten: true
 
   git:
-    taskfile: https://raw.githubusercontent.com/lwmacct/251207-task-remote/refs/heads/main/.task/git.yml
+    taskfile: https://github.com/lwmacct/251207-task-remote.git//.task/git.yml
     optional: true
 
   go:
-    taskfile: https://raw.githubusercontent.com/lwmacct/251207-task-remote/refs/heads/main/.task/go.yml
+    taskfile: https://github.com/lwmacct/251207-task-remote.git//.task/go.yml
     optional: true
 
   cmd:
