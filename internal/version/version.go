@@ -8,6 +8,7 @@
 //
 // 版本信息优先通过 go build -ldflags 在构建时注入，
 // 若未注入则自动从 runtime/debug.BuildInfo 读取（Go 1.18+）。
+// Author: lwmacct (https://github.com/lwmacct)
 package version
 
 import (
