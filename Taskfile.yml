@@ -7,18 +7,21 @@
 version: "3"
 dotenv: [".env", ".env.example", "{{.HOME}}/.env"]
 
+vars:
+  TASK_REMOTE: "github.com/lwmacct/251207-task-remote.git//.task"
+
 includes:
   env:
-    taskfile: https://github.com/lwmacct/251207-task-remote.git//.task/env.yml
+    taskfile: https://{{.TASK_REMOTE}}/env.yml
     optional: true
     flatten: true
 
   git:
-    taskfile: https://github.com/lwmacct/251207-task-remote.git//.task/git.yml
+    taskfile: https://{{.TASK_REMOTE}}/git.yml
     optional: true
 
   go:
-    taskfile: https://github.com/lwmacct/251207-task-remote.git//.task/go.yml
+    taskfile: https://{{.TASK_REMOTE}}/go.yml
     optional: true
 
   cmd:
