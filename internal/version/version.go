@@ -1,8 +1,13 @@
-// Package version 提供应用程序的版本信息管理。
+// Package version 提供应用程序的版本信息管理和显示功能。
+//
+// 本包支持从构建时注入的 ldflags 或 runtime/debug.BuildInfo 读取版本信息，
+// 并提供多种格式的版本信息输出：
+//   - 默认格式：详细的构建信息（应用名称、版本、Git提交、构建时间等）
+//   - 短格式：仅显示版本号
+//   - JSON格式：以 JSON 结构输出完整的版本信息
 //
 // 版本信息优先通过 go build -ldflags 在构建时注入，
 // 若未注入则自动从 runtime/debug.BuildInfo 读取（Go 1.18+）。
-// Author: lwmacct (https://github.com/lwmacct)
 package version
 
 import (
@@ -100,8 +105,9 @@ func formatBuildTime(vcsTime string) string {
 	return t.In(cst).Format("2006-01-02 15:04:05 MST")
 }
 
-// PrintVersion 打印版本信息
-func PrintVersion() {
+// PrintBuildInfo 打印详细的构建信息（包括版本号、Git提交、构建时间等）
+// 这是 version 命令的默认输出格式
+func PrintBuildInfo() {
 	fmt.Printf("AppRawName:   %s\n", AppRawName)
 	fmt.Printf("AppVersion:   %s\n", AppVersion)
 	fmt.Printf("Go Version:   %s\n", runtime.Version())
@@ -109,6 +115,21 @@ func PrintVersion() {
 	fmt.Printf("Build Time:   %s\n", BuildTime)
 	fmt.Printf("AppProject:   %s\n", AppProject)
 	fmt.Printf("Developer :   %s\n", Developer)
+}
+
+// PrintVersionJSON 以 JSON 格式打印完整的构建信息
+// 包含所有字段：应用名称、项目、版本、Git提交、构建时间、开发者和工作区
+func PrintVersionJSON() {
+	fmt.Printf(`{
+  "appRawName": "%s",
+  "appProject": "%s",
+  "appVersion": "%s",
+  "gitCommit": "%s",
+  "buildTime": "%s",
+  "developer": "%s",
+  "workspace": "%s"
+}
+`, AppRawName, AppProject, AppVersion, GitCommit, BuildTime, Developer, Workspace)
 }
 
 // GetVersion 返回应用版本号

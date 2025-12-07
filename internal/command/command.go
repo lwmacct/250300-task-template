@@ -1,3 +1,4 @@
+// Package command 提供客户端和服务端的命令行功能。
 package command
 
 import "github.com/lwmacct/251128-workspace/internal/config"

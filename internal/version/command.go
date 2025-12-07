@@ -1,11 +1,3 @@
-// Package version 提供版本信息显示命令。
-//
-// 支持多种输出格式：
-//   - 默认：详细版本信息
-//   - short：仅版本号
-//   - json：JSON 格式的完整信息
-//
-// Author: lwmacct (https://github.com/lwmacct)
 package version
 
 import (
@@ -19,44 +11,30 @@ import (
 var Command = &cli.Command{
 	Name:  "version",
 	Usage: "显示版本信息",
-	Commands: []*cli.Command{
-		{
-			Name:   "short",
-			Usage:  "显示简短版本信息",
-			Action: shortAction,
+	Flags: []cli.Flag{
+		&cli.BoolFlag{
+			Name:    "short",
+			Aliases: []string{"s"},
+			Usage:   "显示简短版本信息",
 		},
-		{
-			Name:   "json",
-			Usage:  "以JSON格式显示版本信息",
-			Action: jsonAction,
+		&cli.BoolFlag{
+			Name:    "json",
+			Aliases: []string{"j"},
+			Usage:   "以JSON格式显示版本信息",
 		},
 	},
-	Action: showAction, // 默认显示详细信息
+	Action: action, // 根据标志显示不同格式
 }
 
-// showAction 显示详细版本信息
-func showAction(ctx context.Context, c *cli.Command) error {
-	PrintVersion()
-	return nil
-}
-
-// shortAction 显示简短版本信息
-func shortAction(ctx context.Context, c *cli.Command) error {
-	fmt.Println(GetVersion())
-	return nil
-}
-
-// jsonAction 以JSON格式显示版本信息
-func jsonAction(ctx context.Context, c *cli.Command) error {
-	fmt.Printf(`{
-  "appRawName": "%s",
-  "appProject": "%s",
-  "appVersion": "%s",
-  "gitCommit": "%s",
-  "buildTime": "%s",
-  "developer": "%s",
-  "workspace": "%s"
-}
-`, AppRawName, AppProject, AppVersion, GitCommit, BuildTime, Developer, Workspace)
+// action 根据标志显示不同格式的版本信息
+func action(ctx context.Context, c *cli.Command) error {
+	switch {
+	case c.Bool("json"):
+		PrintVersionJSON()
+	case c.Bool("short"):
+		fmt.Println(GetVersion())
+	default:
+		PrintBuildInfo()
+	}
 	return nil
 }

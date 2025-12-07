@@ -1,4 +1,4 @@
-// Package client 提供 HTTP 客户端命令
+// Package client 提供 HTTP 客户端命令。
 package client
 
 import (

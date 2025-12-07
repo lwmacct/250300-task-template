@@ -1,10 +1,10 @@
-// Package config 提供应用配置管理
+// Package config 提供应用配置管理。
 //
 // 配置加载优先级 (从低到高)：
-//  1. 默认值 - DefaultConfig() 函数中定义
-//  2. 配置文件 - 通过 --config 指定，或按顺序搜索默认路径
-//  3. 环境变量 - 以 <AppRawName> 为前缀，下划线分隔嵌套路径
-//  4. CLI flags - 最高优先级
+//   1. 默认值 - DefaultConfig() 函数中定义
+//   2. 配置文件 - 通过 --config 指定，或按顺序搜索默认路径
+//   3. 环境变量 - 以 <AppRawName> 为前缀，下划线分隔嵌套路径
+//   4. CLI flags - 最高优先级
 package config
 
 import "time"

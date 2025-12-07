@@ -1,4 +1,4 @@
-// Package server 提供 HTTP 服务器命令
+// Package server 提供 HTTP 服务器命令。
 package server
 
 import (
