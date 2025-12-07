@@ -4,7 +4,7 @@ go 1.25.4
 
 require (
 	github.com/lwmacct/251125-go-pkg-logger v0.0.8
-	github.com/lwmacct/251207-go-pkg-config v0.0.2
+	github.com/lwmacct/251207-go-pkg-config v0.0.3
 	github.com/lwmacct/251207-go-pkg-version v0.0.2
 	github.com/urfave/cli/v3 v3.6.1
 )
