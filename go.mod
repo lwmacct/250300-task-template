@@ -9,6 +9,7 @@ require (
 	github.com/knadh/koanf/providers/structs v1.0.0
 	github.com/knadh/koanf/v2 v2.3.0
 	github.com/lwmacct/251125-go-mod-logger v0.0.7
+	github.com/lwmacct/251207-go-mod-version v0.0.1
 	github.com/urfave/cli/v3 v3.6.1
 )
 

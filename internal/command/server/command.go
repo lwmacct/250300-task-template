@@ -11,10 +11,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/lwmacct/251207-go-mod-version/pkg/version"
+	"github.com/urfave/cli/v3"
+
 	"github.com/lwmacct/251128-workspace/internal/command"
 	"github.com/lwmacct/251128-workspace/internal/config"
-	"github.com/lwmacct/251128-workspace/internal/version"
-	"github.com/urfave/cli/v3"
 )
 
 // Command 服务器命令

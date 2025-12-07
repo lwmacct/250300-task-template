@@ -10,11 +10,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/lwmacct/251125-go-mod-logger/pkg/logger"
+	"github.com/lwmacct/251207-go-mod-version/pkg/version"
+	"github.com/urfave/cli/v3"
+
 	"github.com/lwmacct/251128-workspace/internal/command"
 	"github.com/lwmacct/251128-workspace/internal/config"
-	"github.com/lwmacct/251128-workspace/internal/version"
-	"github.com/urfave/cli/v3"
 )
 
 // Command 客户端命令
@@ -64,9 +64,6 @@ func action(ctx context.Context, cmd *cli.Command) error {
 }
 
 func healthAction(ctx context.Context, cmd *cli.Command) error {
-	if err := logger.InitEnv(); err != nil {
-		slog.Warn("初始化日志系统失败，使用默认配置", "error", err)
-	}
 
 	cfg, err := config.Load(cmd, "", version.AppRawName)
 	if err != nil {
