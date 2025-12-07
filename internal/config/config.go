@@ -1,13 +1,17 @@
 // Package config 提供应用配置管理。
 //
 // 配置加载优先级 (从低到高)：
-//   1. 默认值 - DefaultConfig() 函数中定义
-//   2. 配置文件 - 通过 --config 指定，或按顺序搜索默认路径
-//   3. 环境变量 - 以 <AppRawName> 为前缀，下划线分隔嵌套路径
-//   4. CLI flags - 最高优先级
+//  1. 默认值 - DefaultConfig() 函数中定义
+//  2. 配置文件 - 按 configPaths 顺序搜索
+//  3. CLI flags - 最高优先级
 package config
 
-import "time"
+import (
+	"time"
+
+	"github.com/lwmacct/251207-go-pkg-config/pkg/config"
+	"github.com/urfave/cli/v3"
+)
 
 // Config 应用配置
 type Config struct {
@@ -31,7 +35,7 @@ type ClientConfig struct {
 }
 
 // DefaultConfig 返回默认配置
-// 注意：这里的默认值应对齐 internal/command/*/command.go 中的默认值, 确保生成的配置文件示例与 CLI 默认值一致
+// 注意：internal/command/command.go 中的 Defaults 变量引用此函数以实现单一配置来源。
 func DefaultConfig() Config {
 	return Config{
 		Server: ServerConfig{
@@ -46,4 +50,10 @@ func DefaultConfig() Config {
 			Retries: 3,
 		},
 	}
+}
+
+// Load 加载配置，委托给 pkg/config.Load 泛型函数
+// configPaths 为可选的配置文件搜索路径
+func Load(cmd *cli.Command, configPaths []string) (*Config, error) {
+	return config.Load(cmd, configPaths, DefaultConfig())
 }

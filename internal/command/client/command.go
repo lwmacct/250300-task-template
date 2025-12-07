@@ -15,6 +15,7 @@ import (
 
 	"github.com/lwmacct/251128-workspace/internal/command"
 	"github.com/lwmacct/251128-workspace/internal/config"
+	pkgconfig "github.com/lwmacct/251207-go-pkg-config/pkg/config"
 )
 
 // Command 客户端命令
@@ -65,7 +66,7 @@ func action(ctx context.Context, cmd *cli.Command) error {
 
 func healthAction(ctx context.Context, cmd *cli.Command) error {
 
-	cfg, err := config.Load(cmd, "", version.AppRawName)
+	cfg, err := config.Load(cmd, pkgconfig.DefaultPaths(version.AppRawName))
 	if err != nil {
 		return err
 	}
@@ -83,7 +84,7 @@ func healthAction(ctx context.Context, cmd *cli.Command) error {
 
 func getAction(ctx context.Context, cmd *cli.Command) error {
 
-	cfg, err := config.Load(cmd, "", version.AppRawName)
+	cfg, err := config.Load(cmd, pkgconfig.DefaultPaths(version.AppRawName))
 	if err != nil {
 		return err
 	}
