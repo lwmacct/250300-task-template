@@ -11,7 +11,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/lwmacct/251207-go-mod-version/pkg/version"
+	"github.com/lwmacct/251207-go-pkg-version/pkg/version"
 	"github.com/urfave/cli/v3"
 
 	"github.com/lwmacct/251128-workspace/internal/command"

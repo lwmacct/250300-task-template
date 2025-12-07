@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/lwmacct/251125-go-mod-logger/pkg/logger"
+	"github.com/lwmacct/251125-go-pkg-logger/pkg/logger"
 	app "github.com/lwmacct/251128-workspace/internal/command/client"
 )
 
