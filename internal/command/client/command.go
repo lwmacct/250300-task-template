@@ -85,9 +85,6 @@ func healthAction(ctx context.Context, cmd *cli.Command) error {
 }
 
 func getAction(ctx context.Context, cmd *cli.Command) error {
-	if err := logger.InitEnv(); err != nil {
-		slog.Warn("初始化日志系统失败，使用默认配置", "error", err)
-	}
 
 	cfg, err := config.Load(cmd, "", version.AppRawName)
 	if err != nil {

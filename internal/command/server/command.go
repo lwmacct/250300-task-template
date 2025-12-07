@@ -11,7 +11,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/lwmacct/251125-go-mod-logger/pkg/logger"
 	"github.com/lwmacct/251128-workspace/internal/command"
 	"github.com/lwmacct/251128-workspace/internal/config"
 	"github.com/lwmacct/251128-workspace/internal/version"
@@ -50,9 +49,6 @@ var Command = &cli.Command{
 }
 
 func action(ctx context.Context, cmd *cli.Command) error {
-	if err := logger.InitEnv(); err != nil {
-		slog.Warn("初始化日志系统失败，使用默认配置", "error", err)
-	}
 
 	// 加载配置：默认值 → 配置文件 → 环境变量 → CLI flags
 	cfg, err := config.Load(cmd, "", version.AppRawName)
