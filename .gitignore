@@ -35,10 +35,6 @@ __pycache__/
 
 # build binaries
 /bin/
-/main
-/client
-/server
 
-# AI Agent 相关
-# **/.agent/*
+# ai tools
 # **/.claude/*

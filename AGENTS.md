@@ -1,1 +1,0 @@
-docs/content/claude/CLAUDE.md
