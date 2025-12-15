@@ -4,7 +4,7 @@ go 1.25.4
 
 require (
 	github.com/lwmacct/251125-go-pkg-logger v0.0.8
-	github.com/lwmacct/251207-go-pkg-config v0.0.3
+	github.com/lwmacct/251207-go-pkg-config v0.0.10
 	github.com/lwmacct/251207-go-pkg-version v0.0.2
 	github.com/urfave/cli/v3 v3.6.1
 )
@@ -20,6 +20,6 @@ require (
 	github.com/knadh/koanf/v2 v2.3.0 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
-	go.yaml.in/yaml/v3 v3.0.3 // indirect
-	golang.org/x/sys v0.32.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	golang.org/x/sys v0.39.0 // indirect
 )

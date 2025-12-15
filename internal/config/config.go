@@ -52,8 +52,17 @@ func DefaultConfig() Config {
 	}
 }
 
-// Load 加载配置，委托给 pkg/config.Load 泛型函数
-// configPaths 为可选的配置文件搜索路径
-func Load(cmd *cli.Command, configPaths []string) (*Config, error) {
-	return config.Load(cmd, configPaths, DefaultConfig())
+// // Load 加载配置，委托给 pkg/config.Load 泛型函数
+// // configPaths 为可选的配置文件搜索路径
+// func Load(cmd *cli.Command, configPaths []string) (*Config, error) {
+// 	return config.Load(cmd, configPaths, DefaultConfig())
+// }
+
+func Load(cmd *cli.Command, appName string, opts ...config.Option) (*Config, error) {
+	return config.Load(
+		DefaultConfig(),
+		config.WithConfigPaths(appName),
+		config.WithEnvPrefix("APP_"),
+		config.WithCommand(cmd),
+	)
 }
