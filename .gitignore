@@ -23,6 +23,13 @@
 **/temp/**
 **/cache/**
 
+# 临时文件
+**/*.bak
+**/*.log
+**/*.tmp
+**/*.temp
+**/*.cache
+
 # python
 __pycache__/
 *.pyc
