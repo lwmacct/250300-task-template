@@ -12,8 +12,6 @@
 
 # node_modules
 **/node_modules/**
-**/pnpm-lock.yaml
-**/yarn.lock
 **/tsconfig.tsbuildinfo
 
 # 临时目录
