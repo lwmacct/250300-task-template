@@ -3,13 +3,13 @@ package config
 import (
 	"testing"
 
-	"github.com/lwmacct/251207-go-pkg-config/pkg/config"
+	"github.com/lwmacct/251207-go-pkg-cfgm/pkg/cfgm"
 )
 
-var helper = config.ConfigTestHelper[Config]{
+var helper = cfgm.ConfigTestHelper[Config]{
 	ExamplePath: "config/config.example.yaml",
 	ConfigPath:  "config/config.yaml",
 }
 
-func TestGenerateExample(t *testing.T) { helper.GenerateExample(t, DefaultConfig()) }
+func TestWriteExample(t *testing.T)    { helper.WriteExampleFile(t, DefaultConfig()) }
 func TestConfigKeysValid(t *testing.T) { helper.ValidateKeys(t) }

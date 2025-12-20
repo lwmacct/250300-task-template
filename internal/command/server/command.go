@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/lwmacct/251207-go-pkg-cfgm/pkg/cfgm"
 	"github.com/lwmacct/251207-go-pkg-version/pkg/version"
 	"github.com/urfave/cli/v3"
 
@@ -51,12 +52,7 @@ var Command = &cli.Command{
 
 func action(ctx context.Context, cmd *cli.Command) error {
 
-	// 加载配置：默认值 → 配置文件 → 环境变量 → CLI flags
-	cfg, err := config.Load(cmd, version.AppRawName)
-	if err != nil {
-		return err
-	}
-
+	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.GetAppRawName())
 	mux := http.NewServeMux()
 
 	// 健康检查端点

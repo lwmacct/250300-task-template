@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/lwmacct/251207-go-pkg-cfgm/pkg/cfgm"
+
 	"github.com/lwmacct/251207-go-pkg-version/pkg/version"
 	"github.com/urfave/cli/v3"
 
@@ -65,11 +67,7 @@ func action(ctx context.Context, cmd *cli.Command) error {
 
 func healthAction(ctx context.Context, cmd *cli.Command) error {
 
-	cfg, err := config.Load(cmd, version.AppRawName)
-	if err != nil {
-		return err
-	}
-
+	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.GetAppRawName())
 	client := NewHTTPClient(&cfg.Client)
 	resp, err := client.Health(ctx)
 	if err != nil {
@@ -83,10 +81,7 @@ func healthAction(ctx context.Context, cmd *cli.Command) error {
 
 func getAction(ctx context.Context, cmd *cli.Command) error {
 
-	cfg, err := config.Load(cmd, version.AppRawName)
-	if err != nil {
-		return err
-	}
+	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.GetAppRawName())
 
 	path := "/"
 	if cmd.NArg() > 0 {
