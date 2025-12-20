@@ -66,7 +66,6 @@ func action(ctx context.Context, cmd *cli.Command) error {
 }
 
 func healthAction(ctx context.Context, cmd *cli.Command) error {
-
 	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.GetAppRawName())
 	client := NewHTTPClient(&cfg.Client)
 	resp, err := client.Health(ctx)
@@ -74,13 +73,11 @@ func healthAction(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("health check failed: %w", err)
 	}
 
-	fmt.Printf("Server: %s\n", cfg.Client.URL)
-	fmt.Printf("Status: %s\n", resp.Status)
+	slog.Info("Health check completed", "server", cfg.Client.URL, "status", resp.Status)
 	return nil
 }
 
 func getAction(ctx context.Context, cmd *cli.Command) error {
-
 	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.GetAppRawName())
 
 	path := "/"
@@ -94,7 +91,7 @@ func getAction(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("GET request failed: %w", err)
 	}
 
-	fmt.Println(body)
+	slog.Info("GET response", "body", body)
 	return nil
 }
 
@@ -175,9 +172,8 @@ func (c *HTTPClient) doRequest(ctx context.Context, method, url string) (string,
 		return "", fmt.Errorf("request failed: %w", err)
 	}
 	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			// Log the error but don't override the return error
-			_ = err
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			slog.Debug("failed to close response body", "error", closeErr)
 		}
 	}()
 

@@ -51,7 +51,6 @@ var Command = &cli.Command{
 }
 
 func action(ctx context.Context, cmd *cli.Command) error {
-
 	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.GetAppRawName())
 	mux := http.NewServeMux()
 
@@ -96,8 +95,8 @@ func action(ctx context.Context, cmd *cli.Command) error {
 
 	slog.Info("Shutting down")
 
-	// 优雅关闭，最多等待 10 秒
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.Server.Timeout)
+	// 优雅关闭，最多等待 timeout 时间
+	shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), cfg.Server.Timeout)
 	defer cancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
