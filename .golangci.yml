@@ -35,11 +35,13 @@ linters:
     - gosmopolitan # i18n
     # 已弃用
     - wsl
-    - tagalign # struct tag 对齐, 负优化
     # 注释要求过严
     - revive # 与 staticcheck 重复，规则过严
     - errname # 错误命名规则
     - goprintffuncname # printf 函数命名
+    # 不合理
+    - tagalign # struct tag 对齐, 负优化
+    - tagliatelle # struct tag 格式检查, 负优化
 
   settings:
     govet:
@@ -53,6 +55,9 @@ linters:
     gocritic: {}
     exhaustive:
       default-signifies-exhaustive: true
+    goconst:
+      ignore-tests: true # 测试文件中的重复字符串通常是为了可读性
+      min-occurrences: 5 # 协议适配中的字符串字面量在 switch 中使用是合理的
 
 formatters:
   enable:
