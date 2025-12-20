@@ -21,28 +21,9 @@ linters:
     - err113 # 错误定义规则过严
     - gochecknoglobals # 禁止全局变量
     - gochecknoinits # 禁止 init 函数
-    - nonamedreturns # 禁止命名返回
-    - interfacebloat # 接口方法数限制
-    - maintidx # 可维护性指数
-    - nestif # 嵌套 if 检测
-    - goconst # 常量提取
-    - dupl # 重复代码
-    - inamedparam # 接口参数命名
-    - tagliatelle # struct tag 命名风格
-    - tagalign # struct tag 对齐
-    - musttag # 强制 struct tag
-    - goheader # 文件头检查
-    - gomoddirectives # go.mod 指令检查
-    - gomodguard # go.mod 依赖检查
-    - grouper # 表达式分组
-    - decorder # 声明顺序
-    - funcorder # 函数顺序
-    - containedctx # context 包含检查
-    - contextcheck # context 检查
     - noinlineerr # 禁止内联错误处理
     - paralleltest # 要求 t.Parallel()
     - testpackage # 要求 _test 包
-    - tparallel # t.Parallel 检查
     # 特定框架
     - arangolint # ArangoDB
     - ginkgolinter # Ginkgo
@@ -54,6 +35,7 @@ linters:
     - gosmopolitan # i18n
     # 已弃用
     - wsl
+    - tagalign # struct tag 对齐, 负优化
     # 注释要求过严
     - revive # 与 staticcheck 重复，规则过严
     - errname # 错误命名规则
