@@ -1,0 +1,23 @@
+# Codecov 配置
+# https://docs.codecov.com/docs/codecovyml-reference
+
+coverage:
+  status:
+    project:
+      default:
+        target: 50%
+        threshold: 5%
+    patch:
+      default:
+        target: 50%
+        threshold: 10%
+        # 仅当 patch 有足够的可测试代码时才检查
+        only_pulls: true
+
+ignore:
+  # CLI 入口代码 - 包含信号处理、服务启动等副作用，难以单元测试
+  - "cmd/**/*"
+  - "internal/command/**/*"
+  # 文档文件
+  - "**/*.md"
+  - "docs/**/*"
