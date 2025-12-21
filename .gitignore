@@ -5,6 +5,10 @@
 **/.conda/*
 **/.task/remote/*
 
+# 构建输出
+**/dist/**
+**/build/**
+
 # 秘密文件
 **/.env
 **/.secret/*
@@ -43,3 +47,6 @@ __pycache__/
 
 # ai tools
 # **/.claude/*
+
+# VS Code extensions
+.vsix
