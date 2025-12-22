@@ -31,6 +31,7 @@
 **/*.bak
 **/*.log
 **/*.tmp
+**/*.out
 **/*.temp
 **/*.cache
 
