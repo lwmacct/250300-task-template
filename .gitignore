@@ -20,13 +20,6 @@
 **/node_modules/**
 **/tsconfig.tsbuildinfo
 
-# 临时目录
-**/tmp/**
-**/log/**
-**/logs/**
-**/temp/**
-**/cache/**
-
 # 临时文件
 **/*.bak
 **/*.log
@@ -34,6 +27,13 @@
 **/*.out
 **/*.temp
 **/*.cache
+
+# 临时目录
+tmp/**
+log/**
+logs/**
+temp/**
+cache/**
 
 # python
 __pycache__/
@@ -44,3 +44,16 @@ __pycache__/
 *.pyz
 *.pywz
 *.pyzw
+
+# 前端相关
+coverage/
+dist-ssr/
+.eslintcache
+
+# Cypress
+/cypress/videos/
+/cypress/screenshots/
+
+# Vitest
+__screenshots__/
+__snapshots__/
