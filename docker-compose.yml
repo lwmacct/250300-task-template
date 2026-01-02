@@ -1,0 +1,41 @@
+#
+# Docker Compose file for PostgreSQL and Redis services.
+# docker compose -f deployments/docker/docker-compose.yml up -d
+# .env file COMPOSE_PROJECT_NAME=srv-db
+---
+services:
+  postgres:
+    image: postgres:18-alpine
+    network_mode: host
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    labels:
+      service.name: "postgres"
+
+  redis:
+    image: redis:7-alpine
+    network_mode: host
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    labels:
+      service.name: "redis"
+
+volumes:
+  postgres_data:
+  redis_data:
