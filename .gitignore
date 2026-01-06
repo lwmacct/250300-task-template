@@ -1,13 +1,13 @@
 # 本地环境
 **/.DS_Store
-**/.local/*
-**/.venv/*
-**/.conda/*
-**/.task/remote/*
+**/.local/
+**/.venv/
+**/.conda/
+**/.task/remote/
 
 # 构建输出
-**/dist/**
-**/build/**
+**/dist/
+**/build/
 **/*.vsix
 **/bin/
 
@@ -17,7 +17,7 @@
 **/config/config.yaml
 
 # node_modules
-**/node_modules/**
+**/node_modules/
 **/tsconfig.tsbuildinfo
 
 # 临时文件
@@ -57,3 +57,6 @@ dist-ssr/
 # Vitest
 __screenshots__/
 __snapshots__/
+
+# IDEs 和 编辑器
+**/.claude/
