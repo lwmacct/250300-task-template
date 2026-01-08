@@ -20,10 +20,6 @@ includes:
     taskfile: https://{{.TASK_REMOTE}}/git.yml?ref=main
     optional: true
 
-  go:
-    taskfile: https://{{.TASK_REMOTE}}/go.yml?ref=main
-    optional: true
-
   cmd:
     taskfile: .task/cmd.yml
     optional: true

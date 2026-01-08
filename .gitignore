@@ -11,8 +11,12 @@
 **/*.vsix
 **/bin/
 
-# 秘密文件
+# Local env files
 **/.env
+**/.env.*
+**/!.env.example
+
+# Secrets and config files
 **/.secret/*
 **/config/config.yaml
 
@@ -37,26 +41,7 @@ cache/**
 
 # python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.pyw
-*.pyz
-*.pywz
-*.pyzw
-
-# 前端相关
-coverage/
-dist-ssr/
-.eslintcache
-
-# Cypress
-/cypress/videos/
-/cypress/screenshots/
-
-# Vitest
-__screenshots__/
-__snapshots__/
+**/*.pyc
 
 # IDEs 和 编辑器
 **/.claude/
