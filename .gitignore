@@ -5,24 +5,19 @@
 **/.conda/
 **/.task/remote/
 
-# 构建输出
-**/dist/
-**/build/
-**/*.vsix
-**/bin/
-
-# Local env files
-**/.env
-**/.env.*
-**/!.env.example
-
-# Secrets and config files
-**/.secret/*
-**/config/config.yaml
+# 生成文件
+**/gen/
 
 # node_modules
 **/node_modules/
 **/tsconfig.tsbuildinfo
+
+# 构建输出
+
+**/bin/
+**/dist/
+**/build/
+**/*.vsix
 
 # 临时文件
 **/*.bak
@@ -39,9 +34,12 @@ logs/**
 temp/**
 cache/**
 
-# python
-__pycache__/
-**/*.pyc
+# Local env files
+.env
+.env.*
+!.env.example
+config/config.yaml
 
 # IDEs 和 编辑器
-**/.claude/
+.claude/
+.playwright-mcp/
