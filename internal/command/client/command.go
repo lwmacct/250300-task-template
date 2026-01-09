@@ -66,7 +66,7 @@ func action(ctx context.Context, cmd *cli.Command) error {
 }
 
 func healthAction(ctx context.Context, cmd *cli.Command) error {
-	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.GetAppRawName())
+	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.AppRawName)
 	client := NewHTTPClient(&cfg.Client)
 	resp, err := client.Health(ctx)
 	if err != nil {
@@ -78,7 +78,7 @@ func healthAction(ctx context.Context, cmd *cli.Command) error {
 }
 
 func getAction(ctx context.Context, cmd *cli.Command) error {
-	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.GetAppRawName())
+	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.AppRawName)
 
 	path := "/"
 	if cmd.NArg() > 0 {

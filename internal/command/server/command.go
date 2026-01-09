@@ -51,7 +51,7 @@ var Command = &cli.Command{
 }
 
 func action(ctx context.Context, cmd *cli.Command) error {
-	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.GetAppRawName())
+	cfg := cfgm.MustLoadCmd(cmd, config.DefaultConfig(), version.AppRawName)
 	mux := http.NewServeMux()
 
 	// 健康检查端点
