@@ -5,15 +5,11 @@
 **/.conda/
 **/.task/remote/
 
-# 生成文件
-**/gen/
-
 # node_modules
 **/node_modules/
 **/tsconfig.tsbuildinfo
 
 # 构建输出
-
 **/bin/
 **/dist/
 **/build/
@@ -34,12 +30,15 @@ logs/**
 temp/**
 cache/**
 
-# Local env files
+# 生成文件
+gen/
+
+# secret files
 .env
 .env.*
 !.env.example
 config/config.yaml
 
-# IDEs 和 编辑器
-.claude/
-.playwright-mcp/
+# AI tools
+.claude
+.playwright-mcp
